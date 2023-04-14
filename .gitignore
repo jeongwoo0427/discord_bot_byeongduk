@@ -125,3 +125,13 @@ dist
 .yarn/build-state.yml
 .yarn/install-state.gz
 .pnp.*
+
+
+# DB Configure File
+/db_options.json
+
+# Secret Key File
+/config.json
+
+# Temporary Folder
+temp/
