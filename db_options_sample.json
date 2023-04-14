@@ -1,0 +1,9 @@
+{
+    "host":"",
+    "user":"",
+    "password":"",
+    "port":"",
+    "database":"discorddb",
+    "connectionLimit": 5,
+    "timezone":"Asia/Seoul"
+}
