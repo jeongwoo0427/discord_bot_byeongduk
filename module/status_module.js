@@ -3,9 +3,14 @@ const info = require('../info.json');
 const speedCheckModule = require('../module/speed_check_module');
 
 async function getMyIp() {
-    const result = await request.get('https://api.ipify.org?format=json');
-    jsonResult = JSON.parse(result);
-    return jsonResult.ip;
+    try{
+        const result = await request.get('https://api.myip.com/');
+        jsonResult = JSON.parse(result);
+        return jsonResult;
+    }catch(err){
+        return null;
+    }
+
 }
 
 async function delay(milliseconds) {
@@ -21,9 +26,13 @@ module.exports = {
         const donwloadSpeed = await speedCheckModule.getNetworkDownloadSpeed();
         console.log('check upload')
         const uploadSpeed = await speedCheckModule.getNetworkUploadSpeed();
+        const ipinfo = await getMyIp();
+
         statusText += `\nVersion : ${info.version}`;
         //console.log('check iip')
-        //statusText += `\nHosting-IP : ${await getMyIp()}`;
+        statusText += `\nHosting-IP : ${ipinfo?.ip.substring(0,7)}*******`;
+        statusText += `\nCountry : ${ipinfo?.country}`;
+        statusText += `\nCC : ${ipinfo?.cc}`;
         statusText += `\nNetwork-Download : ${donwloadSpeed}`;
         statusText += `\nNetwork-Upload: ${uploadSpeed}`;
         statusText += `\nCurrent-Guild-Name : ${message.guild.name}`;
