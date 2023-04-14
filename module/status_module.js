@@ -38,6 +38,7 @@ module.exports = {
         statusText += `\nCurrent-Guild-Name : ${message.guild.name}`;
         statusText += `\nCurrent-Guild-ID: ${message.guild.id}`;
         statusText += `\nBot-Name : ${info.botName}`;
+        statusText += `\nBot-Sex : ${info.sex}`;
         statusText += `\nAuthor : ${info.author}`;
         
 

@@ -12,7 +12,7 @@ module.exports = {
       return speed.mbps.toString();
     } catch (err) {
       console.error(err);
-      return 'err';
+      return 'NaN';
     }
   },
 
@@ -33,7 +33,7 @@ module.exports = {
       return speed.mbps.toString();
     } catch (err) {
       console.error(err);
-      return 'err';
+      return 'NaN';
     }
   }
 }
