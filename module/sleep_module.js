@@ -56,67 +56,71 @@ const sleepModule = {
     },
 
     clickedButton: async (interaction) => {
-        if (!interaction.isButton) return;
+        try{
 
-        //console.log('set의 개수='+votes.length);
+            if (!interaction.isButton) return;
 
-        const splittedArray = interaction.customId.split('-');
-        const vote = votes[interaction.message.id];
-        
-        if(vote==null)
-        return interaction.reply({content: "해당 투표는 만료되었습니다.",ephemeral:true});
-
-        if(vote['votedMembers'].has(interaction.user.id))
-        return interaction.reply({content: "이미 투표에 참여했습니다.",ephemeral:true});
-
-        vote['votedMembers'].add(interaction.user.id);
-
-        const pollEmbed = interaction.message.embeds[0];
-        if(!pollEmbed) return interaction.reply({
-            content:"찾을 수 없는 투표입니다. 베이즈에게 문의주세요.",
-            ephemeral : true
-        })
-
-
-
-
-        const totalField = pollEmbed.fields[0];
-        const totalCount = parseInt(totalField.value);
-        const yesField = pollEmbed.fields[1];
-        const noField =pollEmbed.fields[2];
-
-        const VoteCountedReply = '투표를 완료했습니다.';
-
-        switch(splittedArray[1]){
-            case "yes" : {
-                const newYesCount = parseInt(yesField.value)+1;
-                yesField.value = newYesCount;
-                
-                await interaction.reply({content: VoteCountedReply, ephemeral: true});
-                await interaction.message.edit({embeds:[pollEmbed]});
-
-                if(newYesCount>=(totalCount-newYesCount)){
-                    const memberTarget = interaction.guild.members.cache.get(vote['targetUserId']);
-                    await memberTarget.voice.disconnect();
-                    await interaction.message.edit({components:[]}); //예,아니요 버튼 제거 
+            //console.log('set의 개수='+votes.length);
+    
+            const splittedArray = interaction.customId.split('-');
+            const vote = votes[interaction.message.id];
+            
+            if(vote==null)
+            return interaction.reply({content: "해당 투표는 만료되었습니다.",ephemeral:true});
+    
+            if(vote['votedMembers'].has(interaction.user.id))
+            return interaction.reply({content: "이미 투표에 참여했습니다.",ephemeral:true});
+    
+            vote['votedMembers'].add(interaction.user.id);
+    
+            const pollEmbed = interaction.message.embeds[0];
+            if(!pollEmbed) return interaction.reply({
+                content:"찾을 수 없는 투표입니다. 베이즈에게 문의주세요.",
+                ephemeral : true
+            })
+    
+    
+    
+    
+            const totalField = pollEmbed.fields[0];
+            const totalCount = parseInt(totalField.value);
+            const yesField = pollEmbed.fields[1];
+            const noField =pollEmbed.fields[2];
+    
+            const VoteCountedReply = '투표를 완료했습니다.';
+    
+            switch(splittedArray[1]){
+                case "yes" : {
+                    const newYesCount = parseInt(yesField.value)+1;
+                    yesField.value = newYesCount;
+                    
+                    await interaction.reply({content: VoteCountedReply, ephemeral: true});
+                    await interaction.message.edit({embeds:[pollEmbed]});
+    
+                    if(newYesCount>=(totalCount-newYesCount)){
+                        const memberTarget = interaction.guild.members.cache.get(vote['targetUserId']);
+                        await memberTarget.voice.disconnect();
+                        await interaction.message.edit({components:[]}); //예,아니요 버튼 제거 
+                    }
                 }
-            }
-            break;
-            case "no" : {
-                const newNoCount = parseInt(noField.value)+1;
-                noField.value = newNoCount;
-
-                await interaction.reply({content: VoteCountedReply, ephemeral: true});
-                await interaction.message.edit({embeds:[pollEmbed]});
-
-                if(newNoCount>=(totalCount-newNoCount)){
-                    await interaction.message.edit({components:[]});
+                break;
+                case "no" : {
+                    const newNoCount = parseInt(noField.value)+1;
+                    noField.value = newNoCount;
+    
+                    await interaction.reply({content: VoteCountedReply, ephemeral: true});
+                    await interaction.message.edit({embeds:[pollEmbed]});
+    
+                    if(newNoCount>=(totalCount-newNoCount)){
+                        await interaction.message.edit({components:[]});
+                    }
                 }
+                break;
             }
-            break;
+    
+        }catch(err){
+            console.log(err);
         }
-
-
     },
 
     sleepWho: async (interaction) => {

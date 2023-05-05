@@ -12,10 +12,12 @@ client.on("debug", (message)=>{console.log(`[Debug]${new Date()} : ${message}`);
 
 process.on('uncaughtException', (err)=>{ //최후의 에러 처리
     console.error(`[Exception]${new Date()} : ${err}`);
+    console.error(`${err.stack}`);
 });
 
 process.on('unhandledRejection', err => {
     console.error(`[Rejection]${new Date()} : ${err}`);
+    console.error(`${err.stack}`);
 });
 
 //디스코드 초대권한 설정
