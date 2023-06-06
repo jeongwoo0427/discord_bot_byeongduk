@@ -8,7 +8,11 @@ const client = new Client({
         GatewayIntentBits.GuildMessages,
         GatewayIntentBits.GuildMembers,
         GatewayIntentBits.MessageContent,
+        GatewayIntentBits.DirectMessages,
         GatewayIntentBits.GuildVoiceStates
+    ],
+    partials: [
+        'CHANNEL', // Required to receive DMs
     ]
 });
 

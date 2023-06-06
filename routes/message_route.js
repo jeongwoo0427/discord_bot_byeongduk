@@ -6,7 +6,7 @@ const messageRoute = async (message) =>{
     //console.log(message); 
     await dataController.insertMessage(message);
 
-    if(message.author.id == '1060811944254251008')return voiceController.useBotTTS(message); //겸사서버 특수기능 : 좀보이드의 ID 일 경우 TTS로 이동
+    //if(message.author.id == '1060811944254251008')return voiceController.useBotTTS(message); //겸사서버 특수기능 : 좀보이드의 ID 일 경우 TTS로 이동
 
 
     if(message.author.bot || !message.guild) return; //봇이거나 길드원이 아닐경우 리턴

@@ -19,7 +19,7 @@ const commandController = async (message) => {
                         .setTitle(`커맨드 명령 v${info.version}`)
                         .setDescription('(~커맨드는 아래 명령어 중 하나를 선택해주세요.)')
                         .addFields([
-                            { name: "~재우기 @닉네임", value: "디코에서 자면 입 돌아가요. 투표로 재워주세요." },
+                           // { name: "~재우기 @닉네임", value: "디코에서 자면 입 돌아가요. 투표로 재워주세요." },
                             { name: "~말해줘", value: "당신의 말을 제가 말한 것 처럼 해드려요. (욕은 금지!!)" },
                             { name: "~노래", value: "저의 예술적인 음악 선율을 감상해 봐요. ^^" },
                             { name: "~스플스케줄 또는 스플", value: "스플래툰의 스케줄을 보여준답니다." },
@@ -86,9 +86,9 @@ const commandController = async (message) => {
             return await message.reply(`https://discord.com/api/oauth2/authorize?client_id=1016606382281199697&permissions=57751558&scope=bot`);
         }
         
-        if (command.includes('재우기')) {
-            return await sleepModule.receiveSleepCommand(message);
-        }
+        // if (command.includes('재우기')) { //수정필요
+        //     return await sleepModule.receiveSleepCommand(message);
+        // }
 
 
 
