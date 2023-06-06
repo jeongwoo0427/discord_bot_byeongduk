@@ -1,4 +1,4 @@
-const { Client, GatewayIntentBits } = require('discord.js');
+const { Client, GatewayIntentBits, Partials } = require('discord.js');
 const config = require('../config.json');
 
 // Create a new client instance
@@ -12,7 +12,7 @@ const client = new Client({
         GatewayIntentBits.GuildVoiceStates
     ],
     partials: [
-        'CHANNEL', // Required to receive DMs
+        Partials.Channel, // Required to receive DMs
     ]
 });
 

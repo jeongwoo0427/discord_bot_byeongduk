@@ -12,12 +12,12 @@ const dataController = {
                 attachments += `${element.url} `;
             });
            const rows = await messageModel.insertMessage(
-               message.guild.id,
-               message.guild.name,
-               message.channel.id,
-               message.channel.name,
-               message.author.id,
-               message.author.username,
+               message.guild?.id??'',
+               message.guild?.name??'',
+               message.channel?.id??'',
+               message.channel?.name??'',
+               message.author?.id??'',
+               message.author?.username??'',
                message.content,
                attachments,
                message.createdTimestamp);
