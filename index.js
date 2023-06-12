@@ -1,10 +1,10 @@
 // Require the necessary discord.js classes
 const client = require('./module/client_module');
 
-client.on('message', (msg) => {
-    console.log(msg);
-    if (!msg.author.bot) msg.author.send('ok ' + msg.author.id);
-   });
+// client.on('message', (msg) => {
+//     console.log(msg);
+//     if (!msg.author.bot) msg.author.send('ok ' + msg.author.id);
+//    });
 
 client.on('messageCreate', require('./routes/message_route'));
 
