@@ -20,6 +20,10 @@ const commandController = async (message) => {
                         .setDescription('(~커맨드는 아래 명령어 중 하나를 선택해주세요.)')
                         .addFields([
                            // { name: "~재우기 @닉네임", value: "디코에서 자면 입 돌아가요. 투표로 재워주세요." },
+                            { name: "*밝은 여성 TTS, **차분한 여성 TTS", value: " " },
+                            { name: "! 밝은 남성 TTS, !! 차분한 남성 TTS", value: " " },
+                            { name: "!exit 또는 *exit", value: "음성채널 나가기" },
+                            { name: "DM으로 [서버ID 또는 서버닉네임] 하고 싶은 말", value: "진지한 TTS대화를 하고 싶을때 DM으로 보내보세요." },
                             { name: "~말해줘", value: "당신의 말을 제가 말한 것 처럼 해드려요. (욕은 금지!!)" },
                             { name: "~노래", value: "저의 예술적인 음악 선율을 감상해 봐요. ^^" },
                             { name: "~스플스케줄 또는 스플", value: "스플래툰의 스케줄을 보여준답니다." },

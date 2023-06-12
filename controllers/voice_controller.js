@@ -15,10 +15,16 @@ initTempDir();
 const connections = new Map();
 
 
+const nameOfGuildId = {
+    '베이즈' : '1016607441707880468',
+    '겸사' : '942969471184805908',
+}
+
+
 const voiceController = {
     useUserTTS: async (message) => {
         try {
-            console.log(connections);
+            //console.log(connections);
 
             if (message.member == null) {
                 message.reply('해당 기능은 서버에서만 사용할 수 있습니다.');
@@ -45,7 +51,7 @@ const voiceController = {
             let speed = getSpeed(rawMessage);
 
 
-            const connectionState = connections[guildId]?.channels[channelId]?.state?.status;
+            const connectionState = connections[guildId]?.connection?.state?.status;
 
             console.log(`===============================================================================`);
             console.log(`${new Date().toString()}`);
@@ -58,27 +64,31 @@ const voiceController = {
                 if (connectionState == 'ready') {
                     //console.log('exit');
 
-                    connections[guildId].channels[channelId].destroy();
-                    connections[guildId].channels[channelId] = null;
+                    connections[guildId].connection.destroy();
+                    connections[guildId] = null;
                 }
                 return
             }
 
+            //접속상태, connections 객체의 channelId가 다르거나, 실제 접속된 커넥션의 channelId가 다를 경우
+            if (connectionState != `ready` || connections[guildId].channelId != channelId || connections[guildId]?.connection?.joinConfig?.channelId != channelId) {
 
-            if (connectionState != `ready`) {
-
-
-
-                connections[guildId] = { channels: new Map() };
+                connections[guildId] = { 
+                    connection : null, 
+                    channelId : null,
+                };
 
                 console.log(`created new channel map`);
 
-                connections[guildId].channels[channelId] = joinVoiceChannel({
+                connections[guildId].connection = joinVoiceChannel({
                     guildId: guildId,
                     channelId: channelId,
                     adapterCreator: message.guild.voiceAdapterCreator
                 });
-                const connectionState2 = connections[guildId]?.channels[channelId]?.state?.status;
+                connections[guildId].channelId = channelId;
+                
+
+                const connectionState2 = connections[guildId]?.connection?.state?.status;
                 console.log(`${new Date().toString()} : joined voice channel`);
                 console.log(`connectionState2=${connectionState2}`);
                 // console.log(connection.);
@@ -86,7 +96,7 @@ const voiceController = {
 
 
 
-            playVoice(clearMessage, voice, speed, guildId, channelId);
+            await playVoice(clearMessage, voice, speed, guildId);
 
 
             // const post = request.post('https://kakaoi-newtone-openapi.kakao.com/v1/synthesize', {
@@ -112,9 +122,13 @@ const voiceController = {
     
     usePrivateTTS : async(message) => {
         try{
-
-            const rawMessage = message.content;
+            
+            let rawMessage = message.content;
             const guildId = getGuildId(rawMessage);
+            let clearMessage = rawMessage.replace(`[${guildId}]`,'');
+            const authorName = message.author.username;
+            
+            //console.log(authorName.username);
 
             if(guildId == null){
                 return message.reply('올바른 TTS 커맨드를 입력해주세요. ( ex. [29832912391293]이렇게요. )');
@@ -122,8 +136,28 @@ const voiceController = {
         
             //console.log(guildId);
 
+            let channel = connections[guildId];
+
+          
+            if(channel == null) {
+                return message.reply('병덕이가 해당 서버에 접속이 없습니다. 음성채널에 입장을 시켜준 후 다시 시도해주세요');
+            }
 
 
+            const channelId = channel.connection?.joinConfig?.channelId;
+
+            if(channelId == null){
+                return message.reply('병덕이가 해당 채널에 접속이 없습니다. 음성채널에 입장을 시켜준 후 다시 시도해주세요');
+            }
+
+
+            const connectionState = connections[guildId]?.connection?.state?.status;
+            if(connectionState != 'ready'){
+                return message.reply('병덕이가 해당 서버 또는 채널에서의 접속이 없습니다. 음성채널에 입장을 시켜준 후 다시 시도해주세요.');
+            }
+
+            //await playVoice(authorName+'님의 비밀대화입니다','WOMAN_READ_CALM','0.85',guildId); //바로 넘어가버림
+            await playVoice(authorName+'님의 비밀대화입니다. '+clearMessage,'MAN_DIALOG_BRIGHT','0.85',guildId);
 
             
         } catch (err) {
@@ -134,7 +168,7 @@ const voiceController = {
 }
 
 
-async function playVoice(clearMessage, voice, speed, guildId, channelId) {
+async function playVoice(clearMessage, voice, speed, guildId) {
     ////////////////////////메시지 변형부분////////////////////////
 
 
@@ -193,7 +227,7 @@ async function playVoice(clearMessage, voice, speed, guildId, channelId) {
     let audioPlayer = createAudioPlayer();
     const audioResource = createAudioResource(`./temp/tts/${guildId}.mp3`); //사용을 위해서는 assets/audio/temp/tts 폴더가 존재해야 함.
     audioPlayer.play(audioResource);
-    connections[guildId].channels[channelId].subscribe(audioPlayer);
+    connections[guildId].connection.subscribe(audioPlayer);
 }
 
 function getVoice(message) {
@@ -239,6 +273,10 @@ function getGuildId(message) {
     let startIndex = message.indexOf("[") + 1;
     let endIndex = message.indexOf("]");
     let guildId = message.substring(startIndex, endIndex);
+
+    if(nameOfGuildId[guildId] != null){ //대체텍스트가 존재할경우 변환
+        return nameOfGuildId[guildId];
+    }
 
     return guildId;
 }
