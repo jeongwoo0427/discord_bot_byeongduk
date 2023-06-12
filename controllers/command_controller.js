@@ -17,7 +17,7 @@ const commandController = async (message) => {
                 embeds: [
                     new EmbedBuilder()
                         .setTitle(`커맨드 명령 v${info.version}`)
-                        .setDescription('(~커맨드는 아래 명령어 중 하나를 선택해주세요.)')
+                        .setDescription(' ')
                         .addFields([
                            // { name: "~재우기 @닉네임", value: "디코에서 자면 입 돌아가요. 투표로 재워주세요." },
                             { name: "*밝은 여성 TTS, **차분한 여성 TTS", value: " " },
@@ -35,6 +35,11 @@ const commandController = async (message) => {
         }
 
         if (command.substring(0,4) == `~말해줘`) {
+            if (message.member == null) {
+                message.reply('해당 기능은 서버에서만 사용할 수 있습니다.');
+                return;
+            }
+
             if(command.trim().length <= 4){
                 return await message.channel.send('최소 한 글자 이상을 입력하세요.');
             }
