@@ -10,9 +10,11 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@discordjs/voice": "^0.16.0",
     "discord-tts": "^1.2.2",
     "discord.js": "^14.3.0",
     "dotenv": "^16.0.2",
+    "ffmpeg-static": "^5.1.0",
     "fs": "^0.0.1-security",
     "nodemon": "^2.0.19",
     "request": "^2.88.2"

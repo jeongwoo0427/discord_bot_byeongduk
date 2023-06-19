@@ -112,8 +112,11 @@ const voiceController = {
             // });
             // post.pipe(fs.createWriteStream(`./temp/tts/${guildId}.mp3`),)
 
+            //console.log(connections);
+
 
         } catch (err) {
+            console.log(err);
             message.channel.send('음성 모듈 관련 오류가 발생했습니다 ㅜㅜ');
         }
     },
