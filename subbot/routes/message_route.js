@@ -2,6 +2,7 @@ const voiceController = require('../controllers/voice_controller');
 
 const messageRoute = async (message) =>{
 
+
     if(message.author.bot || !message.guild) return; //봇이거나 길드원이 아닐경우 리턴
 
     if(message.content.substring(0,1) == `^`)return voiceController.useUserTTS(message);
