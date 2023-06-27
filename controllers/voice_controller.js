@@ -3,7 +3,7 @@ const fs = require('fs');
 //const discordTTS = require('discord-tts');
 const config = require('../config.json');
 const request = require('request');
-const { createAudioPlayer, createAudioResource, joinVoiceChannel, VoiceConnection } = require('@discordjs/voice');
+const { createAudioPlayer, createAudioResource, joinVoiceChannel, VoiceConnection, getVoiceConnection } = require('@discordjs/voice');
 const splatSchedule = require('../module/splat3_schedule_module');
 const timeModule = require('../module/time_module');
 const proRequest = require('../module/pomised_request_module');
@@ -59,13 +59,14 @@ const voiceController = {
             console.log('guildId=' + guildId + ' channelId=' + channelId);
             console.log(`clearMessage=${clearMessage}`)
 
-            if (clearMessage.includes('exit')) {
+            if (clearMessage.includes('exit')||clearMessage.includes('EXIT')||clearMessage.includes('Exit')) {
 
                 if (connectionState == 'ready') {
                     //console.log('exit');
 
                     connections[guildId].connection.destroy();
                     connections[guildId] = null;
+                    getVoiceConnection(guildId)?.destroy();
                 }
                 return
             }
@@ -79,6 +80,7 @@ const voiceController = {
                 };
 
                 console.log(`created new channel map`);
+                getVoiceConnection(guildId)?.destroy();
 
                 connections[guildId].connection = joinVoiceChannel({
                     guildId: guildId,
@@ -228,6 +230,8 @@ async function playVoice(clearMessage, voice, speed, guildId) {
     const audioResource = createAudioResource(`./temp/tts/${guildId}.mp3`); //사용을 위해서는 assets/audio/temp/tts 폴더가 존재해야 함.
     audioPlayer.play(audioResource);
     connections[guildId].connection.subscribe(audioPlayer);
+    //console.log(getVoiceConnection(guildId)?.joinConfig);
+    
 }
 
 function getVoice(message) {

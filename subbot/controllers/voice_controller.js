@@ -2,7 +2,7 @@ const fs = require('fs');
 //const discordTTS = require('discord-tts');
 const config = require('../config.json');
 const request = require('request');
-const { createAudioPlayer, createAudioResource, joinVoiceChannel, VoiceConnection } = require('@discordjs/voice');
+const { createAudioPlayer, createAudioResource, joinVoiceChannel, VoiceConnection, getVoiceConnection } = require('@discordjs/voice');
 const splatSchedule = require('../module/splat3_schedule_module');
 const timeModule = require('../module/time_module');
 const proRequest = require('../module/pomised_request_module');
@@ -58,13 +58,14 @@ const voiceController = {
             console.log('guildId=' + guildId + ' channelId=' + channelId);
             console.log(`clearMessage=${clearMessage}`)
 
-            if (clearMessage.includes('exit')) {
+            if (clearMessage.includes('exit')||clearMessage.includes('EXIT')||clearMessage.includes('Exit')) {
 
                 if (connectionState == 'ready') {
                     //console.log('exit');
 
                     connections[guildId].connection.destroy();
                     connections[guildId] = null;
+                    getVoiceConnection(guildId)?.destroy();
                 }
                 return
             }
@@ -78,7 +79,8 @@ const voiceController = {
                 };
 
                 console.log(`created new channel map`);
-
+                getVoiceConnection(guildId)?.destroy();
+                
                 connections[guildId].connection = joinVoiceChannel({
                     guildId: guildId,
                     channelId: channelId,
