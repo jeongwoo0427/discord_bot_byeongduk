@@ -39,7 +39,7 @@ const voiceController = {
             }
 
             if (message.member == null) return message.reply('해당 기능은 서버에서만 사용할 수 있습니다.');
-            
+
             if (!message.member.voice.channel) return message.reply('TTS를 사용하기 위해 먼저 음성채널에 있어야 합니다.');
 
             //채널에 접속되었음을 확인
@@ -49,7 +49,7 @@ const voiceController = {
 
 
 
-        
+
 
             //접속상태, connections 객체의 channelId가 다르거나, 실제 접속된 커넥션의 channelId가 다를 경우
             if (liveState != `ready` || connections[guildId].channelId != channelId || connection?.joinConfig?.channelId != channelId) {
@@ -59,7 +59,7 @@ const voiceController = {
                 };
 
                 connection?.destroy();
-                
+
                 joinVoiceChannel({
                     guildId: guildId,
                     channelId: channelId,
@@ -133,11 +133,17 @@ const voiceController = {
         }
     },
 
-    checkAlone : (oldState) => {
+    checkAlone: (oldState) => {
         const members = oldState.channel?.members;
-    
-        if(members?.size == 1 && members.get('1016606382281199697') ){
+
+        if (members?.size == 1 && members.get('1016606382281199697')) {
             destoryConnection(oldState.guild.id);
+        }
+
+        //병덕 병순 둘만 남을때도 OUT
+        if (members?.size == 2 && members.get('1016606382281199697') && members.get('1102861853295644702')) {
+            destoryConnection(oldState.guild.id);
+            return;
         }
     }
 }
@@ -149,7 +155,7 @@ function destoryConnection(guildId) {
     connections[guildId] = null;
     getVoiceConnection(guildId)?.destroy();
 
-    console.log(`${new Date().toString()}`+`Voice Destroy`);
+    console.log(`${new Date().toString()}` + `Voice Destroy`);
 }
 
 async function playVoice(clearMessage, voice, speed, guildId) {
