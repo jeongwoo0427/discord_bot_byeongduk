@@ -162,13 +162,13 @@ function startConnectionTimeout(){
         //console.log(keys);
 
         for(let i = 0; i < keys.length; i++){
-            if(new Date() - connections.get(keys[i]).lastActiveTime >30*1000) //10초 동안 아무런 반응이 없을 경우
+            if(new Date() - connections.get(keys[i]).lastActiveTime >5*60000) //해당 시간 동안 아무런 반응이 없을 경우
             {
                 destoryConnection(keys[i]);
             }
         }
 
-    }, 10*1000);
+    }, 60*1000);
 }
 
 
