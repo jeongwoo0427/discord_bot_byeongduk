@@ -86,9 +86,8 @@ const voiceController = {
             console.log(`===============================================================================`);
 
         } catch (err) {
-            await dataController.insertErrorLog(err);
             message.channel.send('음성 모듈 관련 오류가 발생했습니다 ㅜㅜ');
-            //console.log(err);
+            console.log(err);
         }
     },
 
@@ -133,9 +132,8 @@ const voiceController = {
 
 
         } catch (err) {
-            await dataController.insertErrorLog(err);
             message.channel.send('음성 모듈 관련 오류가 발생했습니다 ㅜㅜ');
-            //console.log(err);
+            console.log(err);
         }
     },
 
@@ -174,7 +172,7 @@ function startConnectionTimeout(){
 
 function destoryConnection(guildId) {
 
-    connections.get(guildId) = null;
+    connections.get(guildId);
     getVoiceConnection(guildId)?.destroy();
 
     console.log(`${new Date().toString()}` + `Voice Destroy`);

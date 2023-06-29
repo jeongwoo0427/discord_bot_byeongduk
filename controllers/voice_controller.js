@@ -175,7 +175,7 @@ function startConnectionTimeout(){
 
 function destoryConnection(guildId) {
 
-    connections.delete(guildId);;
+    connections.delete(guildId);
     getVoiceConnection(guildId)?.destroy();
 
     console.log(`${new Date().toString()}` + `Voice Destroy`);
