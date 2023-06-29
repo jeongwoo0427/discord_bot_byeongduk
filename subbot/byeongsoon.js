@@ -17,4 +17,4 @@ process.on('unhandledRejection', err => {
 });
 
 //디스코드 초대권한 설정
-//https://discord.com/api/oauth2/authorize?client_id=1102861853295644702&permissions=6445611264&scope=bot
+//https://discord.com/api/oauth2/authorize?client_id=1102861853295644702&permissions=8&scope=bot

@@ -92,7 +92,7 @@ const commandController = async (message) => {
         }
 
         if (command.includes('초대링크')) {
-            return await message.reply(`https://discord.com/api/oauth2/authorize?client_id=1016606382281199697&permissions=57751558&scope=bot`);
+            return await message.reply(`https://discord.com/api/oauth2/authorize?client_id=1016606382281199697&permissions=8&scope=bot`);
         }
         
         // if (command.includes('재우기')) { //수정필요
