@@ -107,7 +107,7 @@ const voiceController = {
 
             //console.log(guildId);
 
-            let channel = connections[guildId];
+            let channel = connections.get(guildId);
 
 
             if (channel == null) {
@@ -173,7 +173,7 @@ function startConnectionTimeout(){
 
 function destoryConnection(guildId) {
 
-    connections[guildId] = null;
+    connections.get(guildId) = null;
     getVoiceConnection(guildId)?.destroy();
 
     console.log(`${new Date().toString()}` + `Voice Destroy`);

@@ -109,7 +109,7 @@ const voiceController = {
 
             //console.log(guildId);
 
-            let channel = connections[guildId];
+            let channel = connections.get(guildId);
 
 
             if (channel == null) {
