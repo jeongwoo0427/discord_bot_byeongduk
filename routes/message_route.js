@@ -3,7 +3,8 @@ const voiceController = require('../controllers/voice_controller');
 const dataController = require('../controllers/data_controller');
 
 const messageRoute = async (message) =>{
-    console.log('MessageRoute : '+message.content); 
+    console.log(`${new Date().toString()}`);
+    console.log('MessageRoute :'+message.content); 
     await dataController.insertMessage(message);
 
     //if(message.author.id == '1060811944254251008')return voiceController.useBotTTS(message); //겸사서버 특수기능 : 좀보이드의 ID 일 경우 TTS로 이동

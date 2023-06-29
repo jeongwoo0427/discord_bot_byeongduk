@@ -23,106 +23,72 @@ const nameOfGuildId = {
 const voiceController = {
     useUserTTS: async (message) => {
         try {
-            //console.log(connections);
-
-            if (message.member == null) {
-                message.reply('해당 기능은 서버에서만 사용할 수 있습니다.');
-                return;
-            }
-
-            if (!message.member.voice.channel) {
-                message.reply('TTS를 사용하기 위해 먼저 음성채널에 있어야 합니다.')
-                return false;
-            }
-
-            if (message.content.length <= 1) {
-                message.reply('최소 1개 이상의 글자를 입력해주세요.');
-                return false
-            }
+            if (message.content.length <= 1) return message.reply('최소 1개 이상의 글자를 입력해주세요.');
 
 
             const guildId = message.guildId.toString();
-            const channelId = message.member.voice.channel.id.toString();
-
             let rawMessage = message.content;
             let clearMessage = getClearMessage(rawMessage);
             let voice = getVoice(rawMessage);
             let speed = getSpeed(rawMessage);
 
-
-            const connectionState = connections[guildId]?.connection?.state?.status;
-
-            console.log(`===============================================================================`);
-            console.log(`${new Date().toString()}`);
-            console.log(`connectionState1=${connectionState}`);
-            console.log('guildId=' + guildId + ' channelId=' + channelId);
-            console.log(`clearMessage=${clearMessage}`)
-
-            if (clearMessage.includes('exit')||clearMessage.includes('EXIT')||clearMessage.includes('Exit')) {
-
-                if (connectionState == 'ready') {
-                    //console.log('exit');
-
-                    connections[guildId].connection.destroy();
-                    connections[guildId] = null;
-                    getVoiceConnection(guildId)?.destroy();
-                }
+            if (clearMessage.includes('exit') || clearMessage.includes('EXIT') || clearMessage.includes('Exit')) {
+                destoryConnection(guildId);
                 return
             }
 
-            //접속상태, connections 객체의 channelId가 다르거나, 실제 접속된 커넥션의 channelId가 다를 경우
-            if (connectionState != `ready` || connections[guildId].channelId != channelId || connections[guildId]?.connection?.joinConfig?.channelId != channelId) {
+            if (message.member == null) return message.reply('해당 기능은 서버에서만 사용할 수 있습니다.');
+            
+            if (!message.member.voice.channel) return message.reply('TTS를 사용하기 위해 먼저 음성채널에 있어야 합니다.');
 
-                connections[guildId] = { 
-                    connection : null, 
-                    channelId : null,
+            //채널에 접속되었음을 확인
+            const channelId = message.member.voice.channel.id.toString();
+            const connection = getVoiceConnection(guildId);
+            const liveState = connection?.state?.status;
+
+
+
+        
+
+            //접속상태, connections 객체의 channelId가 다르거나, 실제 접속된 커넥션의 channelId가 다를 경우
+            if (liveState != `ready` || connections[guildId].channelId != channelId || connection?.joinConfig?.channelId != channelId) {
+
+                connections[guildId] = {
+                    channelId: null,
                 };
 
-                console.log(`created new channel map`);
-                getVoiceConnection(guildId)?.destroy();
+                connection?.destroy();
                 
-                connections[guildId].connection = joinVoiceChannel({
+                joinVoiceChannel({
                     guildId: guildId,
                     channelId: channelId,
                     adapterCreator: message.guild.voiceAdapterCreator
                 });
-                connections[guildId].channelId = channelId;
-                
 
-                const connectionState2 = connections[guildId]?.connection?.state?.status;
-                console.log(`${new Date().toString()} : joined voice channel`);
-                console.log(`connectionState2=${connectionState2}`);
-                // console.log(connection.);
+                connections[guildId].channelId = channelId;
+
+                console.log(`joined voice channel!`);
             }
 
 
+            console.log(`connectionState=${liveState}`);
+            console.log('guildId=' + guildId + ' channelId=' + channelId);
+            console.log(`clearMessage=${clearMessage}`)
+            console.log(`===============================================================================`);
 
             await playVoice(clearMessage, voice, speed, guildId);
 
-
-            // const post = request.post('https://kakaoi-newtone-openapi.kakao.com/v1/synthesize', {
-            //     headers: {
-            //         'Content-Type': 'application/xml',
-            //         Authorization: `KakaoAK ${config.kakao_token}`,
-            //     },
-            //     body: xmlData,
-            // }, () => {
-            //     let audioPlayer = createAudioPlayer();
-            //     const audioResource = createAudioResource(`./temp/tts/${guildId}.mp3`); //사용을 위해서는 assets/audio/temp/tts 폴더가 존재해야 함.
-            //     audioPlayer.play(audioResource);
-            //     connections[guildId].channels[channelId].subscribe(audioPlayer);
-            // });
-            // post.pipe(fs.createWriteStream(`./temp/tts/${guildId}.mp3`),)
-
-            //console.log(connections);
-
-
         } catch (err) {
-            console.log(err);
+            await dataController.insertErrorLog(err);
             message.channel.send('음성 모듈 관련 오류가 발생했습니다 ㅜㅜ');
+            //console.log(err);
         }
     },
-    
+}
+
+function destoryConnection(guildId) {
+    connections[guildId] = null;
+    getVoiceConnection(guildId)?.destroy();
 }
 
 
@@ -185,7 +151,7 @@ async function playVoice(clearMessage, voice, speed, guildId) {
     let audioPlayer = createAudioPlayer();
     const audioResource = createAudioResource(`./temp/sub_tts/${guildId}.mp3`); //사용을 위해서는 assets/audio/temp/tts 폴더가 존재해야 함.
     audioPlayer.play(audioResource);
-    connections[guildId].connection.subscribe(audioPlayer);
+    getVoiceConnection(guildId).subscribe(audioPlayer);
 }
 
 function getVoice(message) {

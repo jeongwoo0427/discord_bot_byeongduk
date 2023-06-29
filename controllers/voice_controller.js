@@ -16,159 +16,129 @@ const connections = new Map();
 
 
 const nameOfGuildId = {
-    '베이즈' : '1016607441707880468',
-    '겸사' : '942969471184805908',
+    '베이즈': '1016607441707880468',
+    '겸사': '942969471184805908',
 }
 
 
 const voiceController = {
     useUserTTS: async (message) => {
         try {
-            //console.log(connections);
-
-            if (message.member == null) {
-                message.reply('해당 기능은 서버에서만 사용할 수 있습니다.');
-                return;
-            }
-
-            if (!message.member.voice.channel) {
-                message.reply('TTS를 사용하기 위해 먼저 음성채널에 있어야 합니다.')
-                return false;
-            }
-
-            if (message.content.length <= 1) {
-                message.reply('최소 1개 이상의 글자를 입력해주세요.');
-                return false
-            }
+            if (message.content.length <= 1) return message.reply('최소 1개 이상의 글자를 입력해주세요.');
 
 
             const guildId = message.guildId.toString();
-            const channelId = message.member.voice.channel.id.toString();
-
             let rawMessage = message.content;
             let clearMessage = getClearMessage(rawMessage);
             let voice = getVoice(rawMessage);
             let speed = getSpeed(rawMessage);
 
-
-            const connectionState = connections[guildId]?.connection?.state?.status;
-
-            console.log(`===============================================================================`);
-            console.log(`${new Date().toString()}`);
-            console.log(`connectionState1=${connectionState}`);
-            console.log('guildId=' + guildId + ' channelId=' + channelId);
-            console.log(`clearMessage=${clearMessage}`)
-
-            if (clearMessage.includes('exit')||clearMessage.includes('EXIT')||clearMessage.includes('Exit')) {
-
-                if (connectionState == 'ready') {
-                    //console.log('exit');
-
-                    connections[guildId].connection.destroy();
-                    connections[guildId] = null;
-                    getVoiceConnection(guildId)?.destroy();
-                }
+            if (clearMessage.includes('exit') || clearMessage.includes('EXIT') || clearMessage.includes('Exit')) {
+                destoryConnection(guildId);
                 return
             }
 
-            //접속상태, connections 객체의 channelId가 다르거나, 실제 접속된 커넥션의 channelId가 다를 경우
-            if (connectionState != `ready` || connections[guildId].channelId != channelId || connections[guildId]?.connection?.joinConfig?.channelId != channelId) {
+            if (message.member == null) return message.reply('해당 기능은 서버에서만 사용할 수 있습니다.');
+            
+            if (!message.member.voice.channel) return message.reply('TTS를 사용하기 위해 먼저 음성채널에 있어야 합니다.');
 
-                connections[guildId] = { 
-                    connection : null, 
-                    channelId : null,
+            //채널에 접속되었음을 확인
+            const channelId = message.member.voice.channel.id.toString();
+            const connection = getVoiceConnection(guildId);
+            const liveState = connection?.state?.status;
+
+
+
+        
+
+            //접속상태, connections 객체의 channelId가 다르거나, 실제 접속된 커넥션의 channelId가 다를 경우
+            if (liveState != `ready` || connections[guildId].channelId != channelId || connection?.joinConfig?.channelId != channelId) {
+
+                connections[guildId] = {
+                    channelId: null,
                 };
 
-                console.log(`created new channel map`);
-                getVoiceConnection(guildId)?.destroy();
-
-                connections[guildId].connection = joinVoiceChannel({
+                connection?.destroy();
+                
+                joinVoiceChannel({
                     guildId: guildId,
                     channelId: channelId,
                     adapterCreator: message.guild.voiceAdapterCreator
                 });
-                connections[guildId].channelId = channelId;
-                
 
-                const connectionState2 = connections[guildId]?.connection?.state?.status;
-                console.log(`${new Date().toString()} : joined voice channel`);
-                console.log(`connectionState2=${connectionState2}`);
-                // console.log(connection.);
+                connections[guildId].channelId = channelId;
+
+                console.log(`joined voice channel!`);
             }
 
 
+            console.log(`connectionState=${liveState}`);
+            console.log('guildId=' + guildId + ' channelId=' + channelId);
+            console.log(`clearMessage=${clearMessage}`)
+            console.log(`===============================================================================`);
 
             await playVoice(clearMessage, voice, speed, guildId);
-
-
-            // const post = request.post('https://kakaoi-newtone-openapi.kakao.com/v1/synthesize', {
-            //     headers: {
-            //         'Content-Type': 'application/xml',
-            //         Authorization: `KakaoAK ${config.kakao_token}`,
-            //     },
-            //     body: xmlData,
-            // }, () => {
-            //     let audioPlayer = createAudioPlayer();
-            //     const audioResource = createAudioResource(`./temp/tts/${guildId}.mp3`); //사용을 위해서는 assets/audio/temp/tts 폴더가 존재해야 함.
-            //     audioPlayer.play(audioResource);
-            //     connections[guildId].channels[channelId].subscribe(audioPlayer);
-            // });
-            // post.pipe(fs.createWriteStream(`./temp/tts/${guildId}.mp3`),)
-
 
         } catch (err) {
             await dataController.insertErrorLog(err);
             message.channel.send('음성 모듈 관련 오류가 발생했습니다 ㅜㅜ');
+            //console.log(err);
         }
     },
-    
-    usePrivateTTS : async(message) => {
-        try{
-            
+
+    usePrivateTTS: async (message) => {
+        try {
+
             let rawMessage = message.content;
             const guildId = getGuildId(rawMessage);
-            let clearMessage = rawMessage.replace(`[${guildId}]`,'');
+            let clearMessage = rawMessage.replace(`[${guildId}]`, '');
             const authorName = message.author.username;
-            
+
             //console.log(authorName.username);
 
-            if(guildId == null){
+            if (guildId == null) {
                 return message.reply('올바른 TTS 커맨드를 입력해주세요. ( ex. [29832912391293]이렇게요. )');
             }
-        
+
             //console.log(guildId);
 
             let channel = connections[guildId];
 
-          
-            if(channel == null) {
+
+            if (channel == null) {
                 return message.reply('병덕이가 해당 서버에 접속이 없습니다. 음성채널에 입장을 시켜준 후 다시 시도해주세요');
             }
 
 
-            const channelId = channel.connection?.joinConfig?.channelId;
+            const channelId = getVoiceConnection(guildId)?.joinConfig?.channelId;
 
-            if(channelId == null){
+            if (channelId == null) {
                 return message.reply('병덕이가 해당 채널에 접속이 없습니다. 음성채널에 입장을 시켜준 후 다시 시도해주세요');
             }
 
 
-            const connectionState = connections[guildId]?.connection?.state?.status;
-            if(connectionState != 'ready'){
+            const connectionState = getVoiceConnection(guildId)?.state?.status;
+            if (connectionState != 'ready') {
                 return message.reply('병덕이가 해당 서버 또는 채널에서의 접속이 없습니다. 음성채널에 입장을 시켜준 후 다시 시도해주세요.');
             }
 
             //await playVoice(authorName+'님의 비밀대화입니다','WOMAN_READ_CALM','0.85',guildId); //바로 넘어가버림
-            await playVoice(authorName+'님의 비밀대화입니다. '+clearMessage,'MAN_DIALOG_BRIGHT','0.85',guildId);
+            await playVoice(authorName + '님의 비밀대화입니다. ' + clearMessage, 'MAN_DIALOG_BRIGHT', '0.85', guildId);
 
-            
+
         } catch (err) {
             await dataController.insertErrorLog(err);
             message.channel.send('음성 모듈 관련 오류가 발생했습니다 ㅜㅜ');
+            //console.log(err);
         }
     }
 }
 
+function destoryConnection(guildId) {
+
+    connections[guildId] = null;
+    getVoiceConnection(guildId)?.destroy();
+}
 
 async function playVoice(clearMessage, voice, speed, guildId) {
     ////////////////////////메시지 변형부분////////////////////////
@@ -229,9 +199,9 @@ async function playVoice(clearMessage, voice, speed, guildId) {
     let audioPlayer = createAudioPlayer();
     const audioResource = createAudioResource(`./temp/tts/${guildId}.mp3`); //사용을 위해서는 assets/audio/temp/tts 폴더가 존재해야 함.
     audioPlayer.play(audioResource);
-    connections[guildId].connection.subscribe(audioPlayer);
+    getVoiceConnection(guildId).subscribe(audioPlayer);
     //console.log(getVoiceConnection(guildId)?.joinConfig);
-    
+
 }
 
 function getVoice(message) {
@@ -273,12 +243,12 @@ function getSpeed(message) {
 }
 
 function getGuildId(message) {
-    if(!message.includes('[') || !message.includes(']')) return null;
+    if (!message.includes('[') || !message.includes(']')) return null;
     let startIndex = message.indexOf("[") + 1;
     let endIndex = message.indexOf("]");
     let guildId = message.substring(startIndex, endIndex);
 
-    if(nameOfGuildId[guildId] != null){ //대체텍스트가 존재할경우 변환
+    if (nameOfGuildId[guildId] != null) { //대체텍스트가 존재할경우 변환
         return nameOfGuildId[guildId];
     }
 
