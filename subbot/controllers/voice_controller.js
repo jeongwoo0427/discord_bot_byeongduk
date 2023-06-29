@@ -84,11 +84,71 @@ const voiceController = {
             //console.log(err);
         }
     },
+
+    usePrivateTTS: async (message) => {
+        try {
+
+            let rawMessage = message.content;
+            const guildId = getGuildId(rawMessage);
+            let clearMessage = rawMessage.replace(`[${guildId}]`, '');
+            const authorName = message.author.username;
+
+            //console.log(authorName.username);
+
+            if (guildId == null) {
+                return message.reply('올바른 TTS 커맨드를 입력해주세요. ( ex. [29832912391293]이렇게요. )');
+            }
+
+            //console.log(guildId);
+
+            let channel = connections[guildId];
+
+
+            if (channel == null) {
+                return message.reply('병덕이가 해당 서버에 접속이 없습니다. 음성채널에 입장을 시켜준 후 다시 시도해주세요');
+            }
+
+
+            const channelId = getVoiceConnection(guildId)?.joinConfig?.channelId;
+
+            if (channelId == null) {
+                return message.reply('병덕이가 해당 채널에 접속이 없습니다. 음성채널에 입장을 시켜준 후 다시 시도해주세요');
+            }
+
+
+            const connectionState = getVoiceConnection(guildId)?.state?.status;
+            if (connectionState != 'ready') {
+                return message.reply('병덕이가 해당 서버 또는 채널에서의 접속이 없습니다. 음성채널에 입장을 시켜준 후 다시 시도해주세요.');
+            }
+
+            //await playVoice(authorName+'님의 비밀대화입니다','WOMAN_READ_CALM','0.85',guildId); //바로 넘어가버림
+            await playVoice(authorName + '님의 비밀대화입니다. ' + clearMessage, 'MAN_DIALOG_BRIGHT', '0.85', guildId);
+
+
+        } catch (err) {
+            await dataController.insertErrorLog(err);
+            message.channel.send('음성 모듈 관련 오류가 발생했습니다 ㅜㅜ');
+            //console.log(err);
+        }
+    },
+
+    checkAlone : (oldState) => {
+        const members = oldState.channel?.members;
+    
+        if(members?.size == 1 && members.get('1016606382281199697') ){
+            destoryConnection(oldState.guild.id);
+        }
+    }
 }
 
+
+
 function destoryConnection(guildId) {
+
     connections[guildId] = null;
     getVoiceConnection(guildId)?.destroy();
+
+    console.log(`${new Date().toString()}`+`Voice Destroy`);
 }
 
 

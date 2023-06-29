@@ -131,13 +131,25 @@ const voiceController = {
             message.channel.send('음성 모듈 관련 오류가 발생했습니다 ㅜㅜ');
             //console.log(err);
         }
+    },
+
+    checkAlone : (oldState) => {
+        const members = oldState.channel?.members;
+    
+        if(members?.size == 1 && members.get('1016606382281199697') ){
+            destoryConnection(oldState.guild.id);
+        }
     }
 }
+
+
 
 function destoryConnection(guildId) {
 
     connections[guildId] = null;
     getVoiceConnection(guildId)?.destroy();
+
+    console.log(`${new Date().toString()}`+`Voice Destroy`);
 }
 
 async function playVoice(clearMessage, voice, speed, guildId) {
