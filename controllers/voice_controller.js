@@ -11,6 +11,7 @@ const proRequest = require('../module/pomised_request_module');
 
 
 initTempDir();
+startConnectionTimeout();
 
 const connections = new Map();
 
@@ -52,11 +53,12 @@ const voiceController = {
 
 
             //접속상태, connections 객체의 channelId가 다르거나, 실제 접속된 커넥션의 channelId가 다를 경우
-            if (liveState != `ready` || connections[guildId].channelId != channelId || connection?.joinConfig?.channelId != channelId) {
+            if (liveState != `ready` || connections.get(guildId)?.channelId != channelId || connection?.joinConfig?.channelId != channelId) {
 
-                connections[guildId] = {
+                connections.set(guildId,{
                     channelId: null,
-                };
+                    lastActiveTime: new Date(),
+                })
 
                 connection?.destroy();
 
@@ -66,18 +68,23 @@ const voiceController = {
                     adapterCreator: message.guild.voiceAdapterCreator
                 });
 
-                connections[guildId].channelId = channelId;
+                connections.get(guildId).channelId = channelId;
 
                 console.log(`joined voice channel!`);
             }
+
+
+
+
+            await playVoice(clearMessage, voice, speed, guildId);
+
+            connections.get(guildId).lastActiveTime = new Date();
 
 
             console.log(`connectionState=${liveState}`);
             console.log('guildId=' + guildId + ' channelId=' + channelId);
             console.log(`clearMessage=${clearMessage}`)
             console.log(`===============================================================================`);
-
-            await playVoice(clearMessage, voice, speed, guildId);
 
         } catch (err) {
             await dataController.insertErrorLog(err);
@@ -148,11 +155,27 @@ const voiceController = {
     }
 }
 
+function startConnectionTimeout(){
+    setInterval(() => {
+
+        const keys = [ ...connections.keys()];
+        //console.log(keys);
+
+        for(let i = 0; i < keys.length; i++){
+            if(new Date() - connections.get(keys[i]).lastActiveTime >30*1000) //10초 동안 아무런 반응이 없을 경우
+            {
+                destoryConnection(keys[i]);
+            }
+        }
+
+    }, 10*1000);
+}
+
 
 
 function destoryConnection(guildId) {
 
-    connections[guildId] = null;
+    connections.delete(guildId);;
     getVoiceConnection(guildId)?.destroy();
 
     console.log(`${new Date().toString()}` + `Voice Destroy`);
