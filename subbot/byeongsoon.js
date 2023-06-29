@@ -3,6 +3,8 @@ const client = require('./module/client_module');
 
 client.on('messageCreate', require('./routes/message_route'));
 
+client.on('voiceStateUpdate',require('./routes/voice_state_route'));
+
 client.on("debug_sub", (message)=>{console.log(`[Debug]${new Date()} : ${message}`);})
       .on("warn_sub",  (message)=>{console.log(`[Warn]${new Date()} : ${message}`);});
 

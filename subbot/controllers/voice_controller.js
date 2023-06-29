@@ -135,7 +135,7 @@ const voiceController = {
     checkAlone : (oldState) => {
         const members = oldState.channel?.members;
     
-        if(members?.size == 1 && members.get('1016606382281199697') ){
+        if(members?.size == 1 && members.get('1102861853295644702') ){
             destoryConnection(oldState.guild.id);
         }
     }
