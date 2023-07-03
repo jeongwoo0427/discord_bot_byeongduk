@@ -14,10 +14,12 @@ module.exports = {
     post: (uri) => { },
     download: async (options, path) => {
 
-        return await new Promise((resolve, reject) => {
-
-            request(options,()=>{resolve();}).pipe(fs.createWriteStream(path));
-            
-        });
+        const result = await new Promise((resolve, reject) => request.post(options, (err, res, body) => {
+            if (err != null) {
+                reject(err);
+            }
+            resolve(Buffer.from(body.audioContent, 'base64'));
+        }));
+        fs.writeFileSync(path,result);
     }
 }

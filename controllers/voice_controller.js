@@ -74,9 +74,10 @@ const voiceController = {
             }
 
 
-
+    
 
             await playVoice(clearMessage, voice, speed, guildId);
+
 
             connections.get(guildId).lastActiveTime = new Date();
 
@@ -205,37 +206,70 @@ async function playVoice(clearMessage, voice, speed, guildId) {
     ////////////////////////메시지 변형부분 끝////////////////////////
 
 
-    const xmlData =
-        `
-                <speak>
-                <voice name="`+ voice + `">
-                <prosody rate="`+ speed + `" volume="loud">
-                `
-        //+author+'님의 말  <break time="300ms"/>' 
-        + clearMessage
-        +
-        `
-                </prosody>
-                </voice>
-                </speak>
-                `;
+    // const xmlData =
+    //     `
+    //             <speak>
+    //             <voice name="`+ voice + `">
+    //             <prosody rate="`+ speed + `" volume="loud">
+    //             `
+    //     //+author+'님의 말  <break time="300ms"/>' 
+    //     + clearMessage
+    //     +
+    //     `
+    //             </prosody>
+    //             </voice>
+    //             </speak>
+    //             `;
+
+            
 
 
+    // await proRequest.download(
+    //     {
+
+    //         method: "POST"
+    //         , uri: "https://kakaoi-newtone-openapi.kakao.com/v1/synthesize"
+    //         , headers: {
+    //             "User-Agent": "Mozilla/5.0",
+    //             'Content-Type': 'application/xml',
+    //             Authorization: `KakaoAK ${config.kakao_token}`,
+    //         },
+    //         encoding: null,
+    //         body: xmlData,
+    //     },
+
+    //     `./temp/tts/${guildId}.mp3`);
+
+
+    const jsonData = {
+        "input":{
+          "text":clearMessage
+        },
+        "voice":{
+          "languageCode":"en-gb",
+          "name":"en-GB-Standard-A",
+          "ssmlGender":"FEMALE"
+        },
+        "audioConfig":{
+          "audioEncoding":"MP3"
+        }
+      };
+        
     await proRequest.download(
         {
-
+            uri:"https://texttospeech.googleapis.com/v1/text:synthesize?key=AIzaSyB2lQzazspX8ShWXXGPCt_Y6Pw4Mvs1WhE",
             method: "POST"
-            , uri: "https://kakaoi-newtone-openapi.kakao.com/v1/synthesize"
             , headers: {
                 "User-Agent": "Mozilla/5.0",
-                'Content-Type': 'application/xml',
-                Authorization: `KakaoAK ${config.kakao_token}`,
+                'Content-Type': 'application/json'
             },
             encoding: null,
-            body: xmlData,
+            json : jsonData,
+            //body: jsonData,
         },
 
         `./temp/tts/${guildId}.mp3`);
+
 
     let audioPlayer = createAudioPlayer();
     const audioResource = createAudioResource(`./temp/tts/${guildId}.mp3`); //사용을 위해서는 assets/audio/temp/tts 폴더가 존재해야 함.
