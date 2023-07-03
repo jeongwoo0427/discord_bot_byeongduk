@@ -246,9 +246,9 @@ async function playVoice(clearMessage, voice, speed, guildId) {
           "text":clearMessage
         },
         "voice":{
-          "languageCode":"en-gb",
-          "name":"en-GB-Standard-A",
-          "ssmlGender":"FEMALE"
+          "languageCode":"ko-KR",
+          "name": voice,
+          //"ssmlGender": "FEMALE"
         },
         "audioConfig":{
           "audioEncoding":"MP3"
@@ -271,6 +271,7 @@ async function playVoice(clearMessage, voice, speed, guildId) {
         `./temp/tts/${guildId}.mp3`);
 
 
+
     let audioPlayer = createAudioPlayer();
     const audioResource = createAudioResource(`./temp/tts/${guildId}.mp3`); //사용을 위해서는 assets/audio/temp/tts 폴더가 존재해야 함.
     audioPlayer.play(audioResource);
@@ -286,14 +287,14 @@ function getVoice(message) {
 
     //console.log(cmd1+cmd2);
 
-    if (cmd1 == '!' && cmd2 != '!') return 'MAN_DIALOG_BRIGHT';
-    if (cmd1 == '*' && cmd2 != '*') return 'WOMAN_DIALOG_BRIGHT';
-    if (cmd1 == '!' && cmd2 == '!') return 'MAN_READ_CALM';
-    if (cmd1 == '*' && cmd2 == '*') return 'WOMAN_READ_CALM';
+    if (cmd1 == '!' && cmd2 != '!') return "ko-KR-Neural2-C";
+    if (cmd1 == '*' && cmd2 != '*') return "ko-KR-Neural2-A";
+    if (cmd1 == '!' && cmd2 == '!') return "ko-KR-Neural2-C";
+    if (cmd1 == '*' && cmd2 == '*') return "ko-KR-Neural2-B";
 
 
 
-    return 'MAN_DIALOG_BRIGHT';
+    return "ko-KR-Neural2-C";
 }
 
 function getClearMessage(message) {
