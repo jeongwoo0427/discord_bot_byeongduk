@@ -206,6 +206,8 @@ async function playVoice(clearMessage, voice, speed, guildId) {
     ////////////////////////메시지 변형부분 끝////////////////////////
 
 
+
+    //이전 카카오 api 서비스 종료
     // const xmlData =
     //     `
     //             <speak>
