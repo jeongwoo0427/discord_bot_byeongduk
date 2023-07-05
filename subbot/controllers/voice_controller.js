@@ -229,7 +229,7 @@ async function playVoice(clearMessage, voice, speed, guildId) {
             encoding: null,
             json : jsonData,
             //body: jsonData,
-        },);
+        },`./temp/sub_tts/${guildId}.mp3`);
 
     let audioPlayer = createAudioPlayer();
     const audioResource = createAudioResource(`./temp/sub_tts/${guildId}.mp3`); //사용을 위해서는 assets/audio/temp/tts 폴더가 존재해야 함.
