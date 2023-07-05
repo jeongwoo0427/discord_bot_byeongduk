@@ -203,37 +203,33 @@ async function playVoice(clearMessage, voice, speed, guildId) {
     ////////////////////////메시지 변형부분 끝////////////////////////
 
 
-    const xmlData =
-        `
-                <speak>
-                <voice name="`+ voice + `">
-                <prosody rate="`+ speed + `" volume="loud">
-                `
-        //+author+'님의 말  <break time="300ms"/>' 
-        + clearMessage
-        +
-        `
-                </prosody>
-                </voice>
-                </speak>
-                `;
 
-
+    const jsonData = {
+        "input":{
+          "text":clearMessage
+        },
+        "voice":{
+          "languageCode":"ko-KR",
+          "name": voice,
+          //"ssmlGender": "FEMALE"
+        },
+        "audioConfig":{
+          "audioEncoding":"MP3"
+        }
+      };
+        
     await proRequest.download(
         {
-
+            uri:"https://texttospeech.googleapis.com/v1/text:synthesize?key=AIzaSyB2lQzazspX8ShWXXGPCt_Y6Pw4Mvs1WhE",
             method: "POST"
-            , uri: "https://kakaoi-newtone-openapi.kakao.com/v1/synthesize"
             , headers: {
                 "User-Agent": "Mozilla/5.0",
-                'Content-Type': 'application/xml',
-                Authorization: `KakaoAK ${config.kakao_token}`,
+                'Content-Type': 'application/json'
             },
             encoding: null,
-            body: xmlData,
-        },
-
-        `./temp/sub_tts/${guildId}.mp3`);
+            json : jsonData,
+            //body: jsonData,
+        },);
 
     let audioPlayer = createAudioPlayer();
     const audioResource = createAudioResource(`./temp/sub_tts/${guildId}.mp3`); //사용을 위해서는 assets/audio/temp/tts 폴더가 존재해야 함.
@@ -255,7 +251,7 @@ function getVoice(message) {
 
 
 
-    return 'WOMAN_DIALOG_BRIGHT';
+    return 'ko-KR-Neural2-A';
 }
 
 function getClearMessage(message) {
