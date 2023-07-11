@@ -34,12 +34,12 @@ const voiceController = {
             let voice = getVoice(rawMessage);
             let speed = getSpeed(rawMessage);
 
-            
-            if (clearMessage.trim().substring(0,5).includes('play') || clearMessage.trim().substring(0,5).includes('PLAY') || clearMessage.trim().substring(0,5).includes('Play')) {
+
+            if (clearMessage.trim().substring(0, 5).includes('play') || clearMessage.trim().substring(0, 5).includes('PLAY') || clearMessage.trim().substring(0, 5).includes('Play')) {
                 return
             }
 
-            if (clearMessage.trim().substring(0,5).includes('exit') || clearMessage.trim().substring(0,5).includes('EXIT') || clearMessage.trim().substring(0,5).includes('Exit')) {
+            if (clearMessage.trim().substring(0, 5).includes('exit') || clearMessage.trim().substring(0, 5).includes('EXIT') || clearMessage.trim().substring(0, 5).includes('Exit')) {
                 destoryConnection(guildId);
                 return
             }
@@ -60,7 +60,7 @@ const voiceController = {
             //접속상태, connections 객체의 channelId가 다르거나, 실제 접속된 커넥션의 channelId가 다를 경우
             if (liveState != `ready` || connections.get(guildId)?.channelId != channelId || connection?.joinConfig?.channelId != channelId) {
 
-                connections.set(guildId,{
+                connections.set(guildId, {
                     channelId: null,
                     lastActiveTime: new Date(),
                 })
@@ -79,7 +79,7 @@ const voiceController = {
             }
 
 
-    
+
 
             await playVoice(clearMessage, voice, speed, guildId);
 
@@ -161,20 +161,20 @@ const voiceController = {
     }
 }
 
-function startConnectionTimeout(){
+function startConnectionTimeout() {
     setInterval(() => {
 
-        const keys = [ ...connections.keys()];
+        const keys = [...connections.keys()];
         //console.log(keys);
 
-        for(let i = 0; i < keys.length; i++){
-            if(new Date() - connections.get(keys[i]).lastActiveTime >60*60000) //해당 시간 동안 아무런 반응이 없을 경우
+        for (let i = 0; i < keys.length; i++) {
+            if (new Date() - connections.get(keys[i]).lastActiveTime > 60 * 60000) //해당 시간 동안 아무런 반응이 없을 경우
             {
                 destoryConnection(keys[i]);
             }
         }
 
-    }, 60*1000);
+    }, 60 * 1000);
 }
 
 
@@ -228,7 +228,7 @@ async function playVoice(clearMessage, voice, speed, guildId) {
     //             </speak>
     //             `;
 
-            
+
 
 
     // await proRequest.download(
@@ -249,40 +249,40 @@ async function playVoice(clearMessage, voice, speed, guildId) {
 
 
     const jsonData = {
-        "audioConfig":{
-            "audioEncoding":"MP3",
+        "audioConfig": {
+            "audioEncoding": "MP3",
             "pitch": 5.0,
-          },
-        "input":{
-          "text":clearMessage
         },
-        "voice":{
+        "input": {
+            "text": clearMessage
+        },
+        "voice": {
             // "languageCode": "ja-JP",
             // "name": "ja-JP-Neural2-C",
 
             // "languageCode": "ja-JP",
             // "name": "ja-JP-Wavenet-A"
 
-          "languageCode" : "en-US",
-          "name" : "en-US-Neural2-J",
+            //   "languageCode" : "en-US",
+            //   "name" : "en-US-Neural2-J",
 
-           //"languageCode":"ko-KR",
-          //"name": voice,
-          //"ssmlGender": "FEMALE"
+            "languageCode": "ko-KR",
+            "name": voice,
+            //"ssmlGender": "FEMALE"
         },
 
-      };
-        
+    };
+
     await proRequest.download(
         {
-            uri:"https://texttospeech.googleapis.com/v1/text:synthesize?key=AIzaSyB2lQzazspX8ShWXXGPCt_Y6Pw4Mvs1WhE",
+            uri: "https://texttospeech.googleapis.com/v1/text:synthesize?key=AIzaSyB2lQzazspX8ShWXXGPCt_Y6Pw4Mvs1WhE",
             method: "POST"
             , headers: {
                 "User-Agent": "Mozilla/5.0",
                 'Content-Type': 'application/json'
             },
             encoding: null,
-            json : jsonData,
+            json: jsonData,
             //body: jsonData,
         },
 
