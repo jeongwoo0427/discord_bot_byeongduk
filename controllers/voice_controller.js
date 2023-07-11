@@ -251,7 +251,7 @@ async function playVoice(clearMessage, voice, speed, guildId) {
     const jsonData = {
         "audioConfig":{
             "audioEncoding":"MP3",
-            "pitch": -5.2,
+            "pitch": 5.0,
           },
         "input":{
           "text":clearMessage

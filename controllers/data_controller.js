@@ -5,7 +5,10 @@ const errorLogModel = require('../mysql_model/errorlog_model');
 const dataController = {
     insertMessage : async(message) =>{
         try{
-         
+            let isVoice = 0;
+            if(message.content.substring(0,1) == `*`||message.content.substring(0,1) == `!`||message.content.substring(0,1) == `^`){
+                isVoice = 1;
+            }
             let attachments;
             message.attachments.forEach(element => {
                 if(attachments==null) attachments = '';
@@ -19,6 +22,7 @@ const dataController = {
                message.author?.id??'',
                message.author?.username??'',
                message.content,
+               isVoice,
                attachments,
                message.createdTimestamp);
 
