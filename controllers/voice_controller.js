@@ -249,17 +249,28 @@ async function playVoice(clearMessage, voice, speed, guildId) {
 
 
     const jsonData = {
+        "audioConfig":{
+            "audioEncoding":"MP3",
+            "pitch": -5.2,
+          },
         "input":{
           "text":clearMessage
         },
         "voice":{
-          "languageCode":"ko-KR",
-          "name": voice,
+            // "languageCode": "ja-JP",
+            // "name": "ja-JP-Neural2-C",
+
+            // "languageCode": "ja-JP",
+            // "name": "ja-JP-Wavenet-A"
+
+          "languageCode" : "en-US",
+          "name" : "en-US-Neural2-J",
+
+           //"languageCode":"ko-KR",
+          //"name": voice,
           //"ssmlGender": "FEMALE"
         },
-        "audioConfig":{
-          "audioEncoding":"MP3"
-        }
+
       };
         
     await proRequest.download(
@@ -296,7 +307,7 @@ function getVoice(message) {
 
     if (cmd1 == '!' && cmd2 != '!') return "ko-KR-Neural2-C";
     if (cmd1 == '*' && cmd2 != '*') return "ko-KR-Neural2-A";
-    if (cmd1 == '!' && cmd2 == '!') return "ko-KR-Neural2-C";
+    //if (cmd1 == '!' && cmd2 == '!') return "en-US-Neural2-J";
     if (cmd1 == '*' && cmd2 == '*') return "ko-KR-Neural2-B";
 
 
