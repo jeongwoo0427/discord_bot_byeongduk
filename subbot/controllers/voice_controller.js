@@ -33,7 +33,11 @@ const voiceController = {
             let voice = getVoice(rawMessage);
             let speed = getSpeed(rawMessage);
 
-            if (clearMessage.includes('exit') || clearMessage.includes('EXIT') || clearMessage.includes('Exit')) {
+            if (clearMessage.trim().substring(0,5).includes('play') || clearMessage.trim().substring(0,5).includes('PLAY') || clearMessage.trim().substring(0,5).includes('Play')) {
+                return
+            }
+
+            if (clearMessage.trim().substring(0,5).includes('exit') || clearMessage.trim().substring(0,5).includes('EXIT') || clearMessage.trim().substring(0,5).includes('Exit')) {
                 destoryConnection(guildId);
                 return
             }
