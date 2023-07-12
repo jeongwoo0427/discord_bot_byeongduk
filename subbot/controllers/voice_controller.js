@@ -210,7 +210,7 @@ async function playVoice(clearMessage, voice, speed, guildId) {
 
     const jsonData = {
         "input":{
-          "text":clearMessage
+          "text":clearMessage.substring(0,30)
         },
         "voice":{
           "languageCode":"ko-KR",
