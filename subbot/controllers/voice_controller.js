@@ -255,7 +255,7 @@ function getVoice(message) {
 
 
 
-    return 'ko-KR-Neural2-A';
+    return 'ko-KR-Standard-A';
 }
 
 function getClearMessage(message) {

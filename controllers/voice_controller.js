@@ -305,14 +305,14 @@ function getVoice(message) {
 
     //console.log(cmd1+cmd2);
 
-    if (cmd1 == '!' && cmd2 != '!') return "ko-KR-Neural2-C";
-    if (cmd1 == '*' && cmd2 != '*') return "ko-KR-Neural2-A";
-    //if (cmd1 == '!' && cmd2 == '!') return "en-US-Neural2-J";
-    if (cmd1 == '*' && cmd2 == '*') return "ko-KR-Neural2-B";
+    if (cmd1 == '!' && cmd2 != '!') return "ko-KR-Standard-C";
+    if (cmd1 == '*' && cmd2 != '*') return "ko-KR-Standard-A";
+    if (cmd1 == '!' && cmd2 == '!') return "ko-KR-Standard-D";
+    if (cmd1 == '*' && cmd2 == '*') return "ko-KR-Standard-B";
 
 
 
-    return "ko-KR-Neural2-C";
+    return "ko-KR-Standard-D";
 }
 
 function getClearMessage(message) {
