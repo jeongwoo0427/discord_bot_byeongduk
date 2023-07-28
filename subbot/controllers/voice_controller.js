@@ -191,6 +191,7 @@ async function playVoice({clearMessage, voice, speed, guildId,maxMessageLength=3
         const schedule = await splatSchedule.getSimpleSchdule();
         speed = 1.0;
         clearMessage = `현재 스플 스케줄을 알려드리겠습니다. 챌린지는 ${schedule.challenge}, 오픈은 ${schedule.open}, 연어는 ${schedule.salmon}이고 무기는 ${schedule.salmonWeapon[0]},${schedule.salmonWeapon[1]},${schedule.salmonWeapon[2]},${schedule.salmonWeapon[3]} 입니다, 오버플로셔,사랑해`
+        maxMessageLength=200; 
     }
 
     if (clearMessage == '시간') {
