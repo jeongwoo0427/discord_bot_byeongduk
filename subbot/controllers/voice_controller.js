@@ -79,7 +79,7 @@ const voiceController = {
 
 
 
-            await playVoice(clearMessage, voice, speed, guildId);
+            await playVoice({clearMessage:clearMessage, voice:voice, speed:speed, guildId:guildId});
 
             connections.get(guildId).lastActiveTime = new Date();
 
@@ -132,7 +132,7 @@ const voiceController = {
             }
 
             //await playVoice(authorName+'님의 비밀대화입니다','WOMAN_READ_CALM','0.85',guildId); //바로 넘어가버림
-            await playVoice(authorName + '님의 비밀대화입니다. ' + clearMessage, 'MAN_DIALOG_BRIGHT', '0.85', guildId);
+            await playVoice({clearMessage: authorName + '님의 비밀대화입니다. ' + clearMessage, voice:'MAN_DIALOG_BRIGHT', speed: '0.85',guild: guildId});
 
 
         } catch (err) {
@@ -183,14 +183,14 @@ function destoryConnection(guildId) {
 }
 
 
-async function playVoice(clearMessage, voice, speed, guildId) {
+async function playVoice({clearMessage, voice, speed, guildId,maxMessageLength=30}) {
     ////////////////////////메시지 변형부분////////////////////////
 
 
     if (clearMessage == '스플' || clearMessage == '스플스케줄' || clearMessage == '스플스케쥴') {
         const schedule = await splatSchedule.getSimpleSchdule();
         speed = 1.0;
-        clearMessage = `현재 스플 스케줄을 알려드리겠습니다<break time="500ms"/>. 챌린지는 ${schedule.challenge}<break time="500ms"/>, 오픈은 ${schedule.open}<break time="500ms"/>, 연어는 ${schedule.salmon}이고 무기는 ${schedule.salmonWeapon[0]},${schedule.salmonWeapon[1]},${schedule.salmonWeapon[2]},${schedule.salmonWeapon[3]} 입니다, 오버플로셔,사랑해`
+        clearMessage = `현재 스플 스케줄을 알려드리겠습니다. 챌린지는 ${schedule.challenge}, 오픈은 ${schedule.open}, 연어는 ${schedule.salmon}이고 무기는 ${schedule.salmonWeapon[0]},${schedule.salmonWeapon[1]},${schedule.salmonWeapon[2]},${schedule.salmonWeapon[3]} 입니다, 오버플로셔,사랑해`
     }
 
     if (clearMessage == '시간') {
@@ -210,7 +210,7 @@ async function playVoice(clearMessage, voice, speed, guildId) {
 
     const jsonData = {
         "input":{
-          "text":clearMessage.substring(0,30)
+          "text":clearMessage.substring(0,maxMessageLength)
         },
         "voice":{
           "languageCode":"ko-KR",
