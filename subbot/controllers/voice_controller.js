@@ -184,7 +184,7 @@ function destoryConnection(guildId) {
 }
 
 
-async function playVoice({clearMessage, voice, speed, guildId,maxMessageLength=30}) {
+async function playVoice({clearMessage, voice, speed, guildId,maxMessageLength=60}) {
     ////////////////////////메시지 변형부분////////////////////////
 
     let sampleResource = null;
