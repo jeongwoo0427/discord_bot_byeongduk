@@ -1,5 +1,6 @@
 const dataController = require('./data_controller');
 const fs = require('fs');
+const path = require('node:path');
 //const discordTTS = require('discord-tts');
 const config = require('../config.json');
 const request = require('request');
@@ -190,6 +191,8 @@ function destoryConnection(guildId) {
 async function playVoice({clearMessage, voice, speed, guildId, maxMessageLength = 30}) {
     ////////////////////////메시지 변형부분////////////////////////
 
+    let sampleResource = null;
+    const samplePath = path.join(__dirname,'../','assets','audio','tts_sample');
 
     if (clearMessage == '스플' || clearMessage == '스플스케줄' || clearMessage == '스플스케쥴') {
         const schedule = await splatSchedule.getSimpleSchdule();
@@ -205,48 +208,19 @@ async function playVoice({clearMessage, voice, speed, guildId, maxMessageLength 
         clearMessage = text;
     }
 
+    if (clearMessage == '오예오예'){
+        sampleResource = path.join(samplePath,'오예오예.mp3');
+    }
+
+    if (clearMessage == '우와'){
+        sampleResource = path.join(samplePath,'우와.mp3');
+    }
+
     //특정 인원 바보기능
     //    if(author == '733572758499229766'){ //산들
     //        clearMessage=`나는 바보다`;
     //    }
     ////////////////////////메시지 변형부분 끝////////////////////////
-
-
-
-    //이전 카카오 api 서비스 종료
-    // const xmlData =
-    //     `
-    //             <speak>
-    //             <voice name="`+ voice + `">
-    //             <prosody rate="`+ speed + `" volume="loud">
-    //             `
-    //     //+author+'님의 말  <break time="300ms"/>' 
-    //     + clearMessage
-    //     +
-    //     `
-    //             </prosody>
-    //             </voice>
-    //             </speak>
-    //             `;
-
-
-
-
-    // await proRequest.download(
-    //     {
-
-    //         method: "POST"
-    //         , uri: "https://kakaoi-newtone-openapi.kakao.com/v1/synthesize"
-    //         , headers: {
-    //             "User-Agent": "Mozilla/5.0",
-    //             'Content-Type': 'application/xml',
-    //             Authorization: `KakaoAK ${config.kakao_token}`,
-    //         },
-    //         encoding: null,
-    //         body: xmlData,
-    //     },
-
-    //     `./temp/tts/${guildId}.mp3`);
 
 
     const jsonData = {
@@ -292,7 +266,7 @@ async function playVoice({clearMessage, voice, speed, guildId, maxMessageLength 
 
 
     let audioPlayer = createAudioPlayer();
-    const audioResource = createAudioResource(`./temp/tts/${guildId}.mp3`); //사용을 위해서는 assets/audio/temp/tts 폴더가 존재해야 함.
+    const audioResource = createAudioResource(sampleResource == null?`./temp/tts/${guildId}.mp3`:sampleResource); //사용을 위해서는 assets/audio/temp/tts 폴더가 존재해야 함.
     audioPlayer.play(audioResource);
     getVoiceConnection(guildId).subscribe(audioPlayer);
     //console.log(getVoiceConnection(guildId)?.joinConfig);

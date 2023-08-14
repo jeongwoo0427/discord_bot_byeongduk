@@ -186,6 +186,8 @@ function destoryConnection(guildId) {
 async function playVoice({clearMessage, voice, speed, guildId,maxMessageLength=30}) {
     ////////////////////////메시지 변형부분////////////////////////
 
+    let sampleResource = null;
+    const samplePath = path.join(__dirname,'../','../','assets','audio','tts_sample');
 
     if (clearMessage == '스플' || clearMessage == '스플스케줄' || clearMessage == '스플스케쥴') {
         const schedule = await splatSchedule.getSimpleSchdule();
@@ -198,6 +200,14 @@ async function playVoice({clearMessage, voice, speed, guildId,maxMessageLength=3
         speed = 1.0;
         //message.channel.send(text);
         clearMessage = text;
+    }
+
+    if (clearMessage == '오예오예'){
+        sampleResource = path.join(samplePath,'오예오예.mp3');
+    }
+
+    if (clearMessage == '우와'){
+        sampleResource = path.join(samplePath,'우와.mp3');
     }
 
     //특정 인원 바보기능
@@ -236,7 +246,7 @@ async function playVoice({clearMessage, voice, speed, guildId,maxMessageLength=3
         },`./temp/sub_tts/${guildId}.mp3`);
 
     let audioPlayer = createAudioPlayer();
-    const audioResource = createAudioResource(`./temp/sub_tts/${guildId}.mp3`); //사용을 위해서는 assets/audio/temp/tts 폴더가 존재해야 함.
+    const audioResource = createAudioResource(sampleResource==null?`./temp/sub_tts/${guildId}.mp3`:sampleResource); //사용을 위해서는 assets/audio/temp/tts 폴더가 존재해야 함.
     audioPlayer.play(audioResource);
     getVoiceConnection(guildId).subscribe(audioPlayer);
 }
