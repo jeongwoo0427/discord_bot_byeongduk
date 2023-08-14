@@ -1,4 +1,5 @@
 const fs = require('fs');
+const path = require('node:path');
 //const discordTTS = require('discord-tts');
 const config = require('../config.json');
 const request = require('request');
