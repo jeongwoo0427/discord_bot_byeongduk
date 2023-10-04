@@ -10,7 +10,7 @@ module.exports = {
             if(msg.substring(0, 1) == '!'){
                 return res.send({
                     requestMsg: msg,
-                    responseMsg: '그 커맨드는 디코에서만 써야돼요!!'
+                    responseMsg: '그 커맨드는 디코에서만 써야죠!!'
                 });
             }
             
