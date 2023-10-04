@@ -31,8 +31,8 @@ app.use(cors());
 
 app.use('/',function(req,res,next){
     
-    // console.log(req.path);
-    // console.log(req.body.msg);
+    console.log(req.path);
+    console.log(req.body.msg);
     next();
 });
 
