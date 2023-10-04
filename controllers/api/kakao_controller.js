@@ -6,6 +6,13 @@ module.exports = {
     messageReply: async (req, res, next) => {
         const { room, msg, sender, isGroupChat, replier, imageDB, packageName } = req.body;
         try {
+
+            if(msg.substring(0, 1) == '!'){
+                return res.send({
+                    requestMsg: msg,
+                    responseMsg: '그 커맨드는 디코에서만 써야돼요!!'
+                });
+            }
             
 
             if (msg.substring(0, 1) == '~') {
@@ -26,21 +33,25 @@ module.exports = {
                         끝.`;
                 }
 
+                else if (msg.includes('~쎄이')) {
+                    responseMsg = `${msg.substring(3,msg.length).trimLeft()}`;
+                }
 
-                if (msg.includes('하이')) {
+
+                else if (msg.includes('하이')) {
                     responseMsg = '안녕하세용';
                 }
 
-                if (msg.includes('안녕')) {
+                else if (msg.includes('안녕')) {
                     responseMsg = '오예오예! 안녕하세요!';
                 }
 
 
-                if (msg.includes('점메추')) {
+                else if (msg.includes('점메추')) {
                     responseMsg = '돈까스 마라탕 햄버거 중 골라요';
                 }
 
-                if (msg.includes('스플') || msg.includes('연어')) {
+                else if (msg.includes('스플') || msg.includes('연어')) {
                     const schedule = await shceduleModule.getSimpleSchdule();
         
                     responseMsg = `현재 스플 스케줄을 알려드리겠습니다. 
@@ -60,7 +71,7 @@ module.exports = {
                 return res.send({
                     requestMsg: msg,
                     responseMsg: responseMsg
-                })
+                });
 
             }
             
