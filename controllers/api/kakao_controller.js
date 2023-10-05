@@ -117,16 +117,17 @@ module.exports = {
 //  * (string) packageName
 //  */
 // function response(room, msg, sender, isGroupChat, replier, imageDB, packageName) {
-  
+//     const key = 'bdfortablet1';
 //     const host = 'http://182.222.81.5:1133';
-//     sendData(host, room, msg, sender, isGroupChat, replier, imageDB, packageName);
+//     sendData(key,host, room, msg, sender, isGroupChat, replier, imageDB, packageName);
 
 // }
 
-// function sendData(host, room, msg, sender, isGroupChat, replier, imageDB, packageName) {
+// function sendData(key,host, room, msg, sender, isGroupChat, replier, imageDB, packageName) {
 //   setTimeout(()=>{
 //     try{
 //         const data = {
+//          "key":'key,
 //           "room":room,
 //          "msg": msg,
 //          "sender":sender,
