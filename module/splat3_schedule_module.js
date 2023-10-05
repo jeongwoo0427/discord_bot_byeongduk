@@ -50,16 +50,20 @@ function _convertSchedule(dataJson, langJson, sequence) {
 }
 
 module.exports = {
-    getSchedule: async () => {
+    getSchedule: async (sequence) => {
         const scheduleJson = JSON.parse(await request.get('https://splatoon3.ink/data/schedules.json'));
         const korInfoJson = JSON.parse(await request.get('https://splatoon3.ink/data/locale/ko-KR.json'));
 
-        const schdule = _convertSchedule(scheduleJson, korInfoJson, 0);
+        const schdule = _convertSchedule(scheduleJson, korInfoJson, sequence);
 
         return {
             challenge : `${schdule.challengeRank.vsRule.name} (${schdule.challengeRank.vsStages[0].name}, ${schdule.challengeRank.vsStages[1].name})`,
             open : `${schdule.openRank.vsRule.name} (${schdule.openRank.vsStages[0].name}, ${schdule.openRank.vsStages[1].name})`,
-            salmon : `${schdule.salmon.weapons[0].name}, ${schdule.salmon.weapons[1].name}, ${schdule.salmon.weapons[2].name}, ${schdule.salmon.weapons[3].name} (${schdule.salmon.coopStage.name})`
+            salmon : `${schdule.salmon.coopStage.name} 
+                - ${schdule.salmon.weapons[0].name}, 
+                - ${schdule.salmon.weapons[1].name}, 
+                - ${schdule.salmon.weapons[2].name}, 
+                - ${schdule.salmon.weapons[3].name} `
         }
     },
     getSimpleSchdule : async () => {

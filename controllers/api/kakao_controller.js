@@ -69,18 +69,16 @@ module.exports = {
                 }
 
                 else if (msg.includes('스플') || msg.includes('연어')) {
-                    const schedule = await shceduleModule.getSimpleSchdule();
+                    const schedule0 = await shceduleModule.getSchedule(0);
         
                     responseMsg = `현재 스플 스케줄을 알려드리겠습니다. 
 
-                    챌린지 : ${schedule.challenge}
-                    오픈 :  ${schedule.open}
-                    연어 : ${schedule.salmon}
-                    연어무기
-                        - ${schedule.salmonWeapon[0]},
-                        - ${schedule.salmonWeapon[1]},
-                        - ${schedule.salmonWeapon[2]},
-                        - ${schedule.salmonWeapon[3]})
+                    챌린지 : ${schedule0.challenge}
+
+                    오픈 :  ${schedule0.open}
+
+                    연어 : ${schedule0.salmon}
+
 
                     (APIFrom : https://splatoon3.ink/)`;
                 }
