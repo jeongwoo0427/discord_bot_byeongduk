@@ -1,10 +1,12 @@
 const statusModule = require('../../module/status_module');
 const shceduleModule = require('../../module/splat3_schedule_module');
+const commoneModule = require('../../module/common_module');
 const info = require('../../info.json');
 
 module.exports = {
     messageReply: async (req, res, next) => {
         const { room, msg, sender, isGroupChat, replier, imageDB, packageName } = req.body;
+        console.log(req.body);
         try {
 
             if(msg.substring(0, 1) == '!'){
@@ -13,7 +15,7 @@ module.exports = {
                     responseMsg: '그 커맨드는 디코에서만 써야죠!!'
                 });
             }
-            
+
 
             if (msg.substring(0, 1) == '~') {
                 let responseMsg = `${msg} 는 알 수 없는 명령어입니다.`;
@@ -33,10 +35,16 @@ module.exports = {
                         ~쎄이 헬로 : 헬로
                         
                         끝.`;
+
+                        
                 }
 
                 else if (msg.includes('~쎄이')) {
                     responseMsg = `${msg.substring(3,msg.length).trimLeft()}`;
+                }
+
+                else if (msg.includes('사랑해')) {
+                    responseMsg = `저도 ${sender}님을 사랑해요. 찡긋`;
                 }
 
 
@@ -91,7 +99,6 @@ module.exports = {
 
 
 //클라이언트측 코드
-
 // const scriptName = "권병덕";
 // /**
 //  * (string) room
@@ -103,17 +110,32 @@ module.exports = {
 //  * (string) packageName
 //  */
 // function response(room, msg, sender, isGroupChat, replier, imageDB, packageName) {
-//   try {
+  
 //     const host = 'http://182.222.81.5:1133';
-    
-//     const data = {
-//   "msg": msg};
+//     sendData(host, room, msg, sender, isGroupChat, replier, imageDB, packageName);
+
+// }
+
+// function sendData(host, room, msg, sender, isGroupChat, replier, imageDB, packageName) {
+//   setTimeout(()=>{
+//     try{
+//         const data = {
+//           "room":room,
+//          "msg": msg,
+//          "sender":sender,
+//          "isGroupChat":isGroupChat,
+//          "replier":replier,
+//          "imageDB":imageDB,
+//          "packageName":packageName
+  
+  
+//   };
 //     const response = org.jsoup.Jsoup.connect(host+"/api/kakao/messageReply")
 //     .header("Content-Type", "application/json")
 //     .requestBody(JSON.stringify(data))
 //     .ignoreContentType(true)
 //     .ignoreHttpErrors(true)
-//     .timeout(5000)
+//     .timeout(8000)
 //     .post();
     
     
@@ -123,12 +145,19 @@ module.exports = {
 //       return;
 //     }
     
+    
+    
 //     replier.reply(result.responseMsg);
+    
 //   }  catch (err) {
 //     replier.reply(room,"[메시지 : "+msg+" ] 오류가 발생했오요 ㅜㅜ");
 //     replier.reply(room, err);
 //   }
+    
+//   },1);
 // }
+
+
 // //아래 4개의 메소드는 액티비티 화면을 수정할때 사용됩니다.
 // function onCreate(savedInstanceState, activity) {
 //   var textView = new android.widget.TextView(activity);
