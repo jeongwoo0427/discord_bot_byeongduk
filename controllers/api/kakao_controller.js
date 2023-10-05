@@ -3,11 +3,18 @@ const shceduleModule = require('../../module/splat3_schedule_module');
 const commoneModule = require('../../module/common_module');
 const info = require('../../info.json');
 
+
+const botKey = 'bdfortablet1';
+
 module.exports = {
     messageReply: async (req, res, next) => {
-        const { room, msg, sender, isGroupChat, replier, imageDB, packageName } = req.body;
+        const { key,room, msg, sender, isGroupChat, replier, imageDB, packageName } = req.body;
         console.log(req.body);
         try {
+
+            if(key != botKey){
+                return res.send({ requestMsg: msg, responseMsg:null });
+            }
 
             if(msg.substring(0, 1) == '!'){
                 return res.send({
