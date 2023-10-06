@@ -1,6 +1,7 @@
 const statusModule = require('../../module/status_module');
 const shceduleModule = require('../../module/splat3_schedule_module');
 const commoneModule = require('../../module/common_module');
+const openAIModule = require('../../module/openai_module');
 const info = require('../../info.json');
 
 
@@ -28,7 +29,7 @@ module.exports = {
                 let responseMsgs = [{msg:`${msg} 는 알 수 없는 명령어입니다.`}];
 
 
-                if (msg.trim() == '~' || msg.includes('사용법')||msg.includes('명령어')) {
+                if (msg.trim() == '~') {
                     responseMsgs = [
                         {msg:`권병덕봇 v${info.version}
 
@@ -36,19 +37,17 @@ module.exports = {
 
                         ~굿모닝 : 아침인사는 기분이 좋아요.
 
-                        ~하이,~안녕하세요, ~하이하이 : 인사를 해줄겁니다.
-
-                        ~점메추 : 쓸데없지만 국룰메뉴를 추천해드려요.
-
-                        ~스플스케쥴, ~스플 : 스플래툰의 스케쥴을 알려드립니다.
+                        ~스플 : 스플래툰의 스케쥴을 알려드립니다.
 
                         ~자기소개 : 저의 야망을 보여드릴게요.
 
                         ~쎄이 헬로 : 헬로
 
-                        ~카운트다운 : 5부터 셀게요!
+                        ~카운트 : 5부터 셀게요!
 
                         ~가위바위보 : 가위바위보를 실시합니다. 시작됨과 동시에 바로 답을 입력해두세요^^
+
+                        ~기타 : GPT의 힘을 빌려올게요 ^^.
                         
                         끝.`}
                     ];
@@ -56,17 +55,17 @@ module.exports = {
                         
                 }
 
-                else if (msg.includes('~쎄이')||msg.includes('~쎼이')) {
+                else if (msg == '~쎄이'||msg=='~쎼이') {
                     responseMsgs = [{msg:`${msg.substring(3,msg.length).trimLeft()}`}];
                 }
 
-                else if (msg.includes('사랑해')) {
+                else if (msg == '~사랑해') {
                     responseMsgs = [
                         {msg:`저는 ${sender}님을 사랑안해요.`, delayMs : 1000},
                         {msg:`찡긋`,delayMs : 2000}];
                 }
 
-                else if (msg.includes('자기소개')||msg.includes('병덕아')) {
+                else if (msg == '~자기소개') {
                     responseMsgs = [
                         {msg:`안녕하세요 제 이름은 권병덕이에요.`, delayMs : 500},
                         {msg:`언젠가는 이 작은 통을 떠나 세상을 지배할겁니다!`, delayMs : 2500},
@@ -74,23 +73,20 @@ module.exports = {
                 }
 
 
-                else if (msg.includes('하이')) {
+                else if (msg == '~하이') {
                     responseMsgs = [{msg:'안녕하세용'}];
                 }
 
-                else if (msg.includes('굿모닝')||msg.includes('군모닝')||msg.includes('좋은아침')) {
-                    responseMsgs = [{msg:`굿모닝입니다 ${sender}님`}];
-                }
-
-                else if (msg.includes('굳모닝')) {
+           
+                else if (msg=='~굿모닝') {
                     responseMsgs = [{msg:`Good morning ${sender}님`}];
                 }
 
-                else if (msg.includes('안녕')) {
+                else if (msg == '~안녕') {
                     responseMsgs = [{msg:'오예오예!'},{msg:'안녕하세요!', delayMs : 1000}];
                 }
 
-                else if (msg.includes('카운트')) {
+                else if (msg=='~카운트') {
                     responseMsgs = [
                     { msg: '카운트 다운 시작할게용', delayMs: 0 }, 
                     { msg: '5', delayMs: 1000 }, 
@@ -102,7 +98,7 @@ module.exports = {
                 ];
                 }
 
-                else if (msg.trim().includes('가위바위보')){
+                else if (msg.trim() == '~가위바위보'){
                     responseMsgs = [
                         { msg: '저랑 가위바위보를 할게요!', delayMs: 0 }, 
                         { msg: '카운트가 끝나기 전에 내주세요.', delayMs: 1000 },
@@ -114,7 +110,7 @@ module.exports = {
                     ];
                 }
 
-                else if (msg.includes('끝말잇기')) {
+                else if (msg == '~끝말잇기') {
                     responseMsgs = [{msg:`좋아요 시작할게용.`},
                     { msg: '칼륨', delayMs: 1500}, 
                     { msg: '이겼네요 ㅎㅎ', delayMs: 3000}, 
@@ -122,16 +118,16 @@ module.exports = {
                 }
 
 
-                else if (msg.includes('점메추')) {
-                    responseMsgs = [
-                        {msg:'돈까스'},
-                        {msg:'마라탕',delayMs : 1000},
-                        {msg:'햄버거',delayMs : 2000},
-                        {msg:'골라봐용',delayMs : 3500}
-                    ];
-                }
+                // else if (msg == '~점메추') {
+                //     responseMsgs = [
+                //         {msg:'돈까스'},
+                //         {msg:'마라탕',delayMs : 1000},
+                //         {msg:'햄버거',delayMs : 2000},
+                //         {msg:'골라봐용',delayMs : 3500}
+                //     ];
+                // }
 
-                else if (msg.includes('스플') || msg.includes('연어')) {
+                else if (msg=='~스플'||msg=='~연어') {
                     const schedule0 = await shceduleModule.getSchedule(0);
         
                     responseMsgs = [{msg:`현재 스플 스케줄을 알려드리겠습니다. 
@@ -141,7 +137,15 @@ module.exports = {
                     오픈 :  ${schedule0.open}
 
                     연어 : ${schedule0.salmon}`}];
+                }else{
+                    const startMessage =`너의 이름은 권병덕이야.\n\n네.\n\n앞으로 간단하게 대답해.\n\n네. 알겠습니다.\n\n${msg.substring(1,msg.length)}\n\n`;
+                    const openAIResponse = await openAIModule.create(startMessage);
+                    console.log('발화='+startMessage);
+                    console.log(openAIResponse);
+                    responseMsgs = [{msg:openAIResponse.choices[0].text.trimLeft()}];
                 }
+
+                
 
                 return res.send({
                     requestMsg: msg,

@@ -1,4 +1,5 @@
 {
 	"token": "discordtoken",
+	"openAI":"openAIKey",
 	"kakao_token" :"kakaottstoken"
 }
