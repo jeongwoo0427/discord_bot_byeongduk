@@ -104,7 +104,7 @@ module.exports = {
 
                 else if (msg.trim().includes('가위바위보')){
                     responseMsgs = [
-                        { msg: '가위바위보를 할게요!', delayMs: 0 }, 
+                        { msg: '저랑 가위바위보를 할게요!', delayMs: 0 }, 
                         { msg: '카운트가 끝나기 전에 내주세요.', delayMs: 1000 },
                         { msg: '3', delayMs: 3000 }, 
                         { msg: '2', delayMs: 6000 }, 
