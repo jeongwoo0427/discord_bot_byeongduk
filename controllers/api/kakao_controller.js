@@ -29,7 +29,8 @@ module.exports = {
 
 
                 if (msg.trim() == '~' || msg.includes('사용법')||msg.includes('명령어')) {
-                    responseMsgs = [{msg:`권병덕봇 v${info.version}
+                    responseMsgs = [
+                        {msg:`권병덕봇 v${info.version}
 
                     커맨드리스트 
 
@@ -45,7 +46,8 @@ module.exports = {
 
                         ~쎄이 헬로 : 헬로
                         
-                        끝.`}];
+                        끝.`}
+                    ];
 
                         
                 }
@@ -55,11 +57,16 @@ module.exports = {
                 }
 
                 else if (msg.includes('사랑해')) {
-                    responseMsgs = [{msg:`저는 ${sender}님을 사랑안해요. 찡긋`}];
+                    responseMsgs = [
+                        {msg:`저는 ${sender}님을 사랑안해요.`, delayMs : 1000},
+                        {msg:`찡긋`,delayMs : 2000}];
                 }
 
                 else if (msg.includes('자기소개')||msg.includes('병덕아')) {
-                    responseMsgs = [{msg:`안녕하세요 제 이름은 권병덕이에요. 언젠가는 이 작은 통을 떠나 세상을 지배할겁니다!`}];
+                    responseMsgs = [
+                        {msg:`안녕하세요 제 이름은 권병덕이에요.`, delayMs : 500},
+                        {msg:`언젠가는 이 작은 통을 떠나 세상을 지배할겁니다!`, delayMs : 2500},
+                        {msg:`찡긋`,delayMs : 4000}];
                 }
 
 
@@ -76,15 +83,18 @@ module.exports = {
                 }
 
                 else if (msg.includes('안녕')) {
-                    responseMsgs = [{msg:'오예오예! 안녕하세요!'}];
+                    responseMsgs = [{msg:'오예오예!'},{msg:'안녕하세요!', delayMs : 1000}];
                 }
 
                 else if (msg.includes('카운트')) {
                     responseMsgs = [
                     { msg: '카운트 다운 시작할게용', delayMs: 0 }, 
-                    { msg: '3', delayMs: 1000 }, 
-                    { msg: '2', delayMs: 2000 }, 
-                    { msg: '1', delayMs: 3000 }
+                    { msg: '5', delayMs: 1000 }, 
+                    { msg: '4', delayMs: 2000 }, 
+                    { msg: '3', delayMs: 3000 }, 
+                    { msg: '2', delayMs: 4000 }, 
+                    { msg: '1', delayMs: 5000 },
+                    { msg: '빵야!', delayMs: 6000 }
                 ];
                 }
 
@@ -94,7 +104,12 @@ module.exports = {
 
 
                 else if (msg.includes('점메추')) {
-                    responseMsgs = [{msg:'돈까스 마라탕 햄버거 중 골라요'}];
+                    responseMsgs = [
+                        {msg:'돈까스'},
+                        {msg:'마라탕',delayMs : 1000},
+                        {msg:'햄버거',delayMs : 2000},
+                        {msg:'골라봐용',delayMs : 3500}
+                    ];
                 }
 
                 else if (msg.includes('스플') || msg.includes('연어')) {
