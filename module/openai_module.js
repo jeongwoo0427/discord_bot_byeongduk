@@ -15,6 +15,7 @@ module.exports = {
 
     const response = await openai.completions.create({
       model: "text-davinci-003",
+      //model:"gpt-3.5-turbo-instruct-0914",
       prompt: text,
       temperature: 1,
       max_tokens: 256,
