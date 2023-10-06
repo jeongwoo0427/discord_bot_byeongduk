@@ -13,25 +13,27 @@ module.exports = {
         try {
 
             if(key != botKey){
-                return res.send({ requestMsg: msg, responseMsg:null });
+                return res.send({ requestMsg: msg, responseMsgs:null });
             }
 
             if(msg.substring(0, 1) == '!'){
                 return res.send({
                     requestMsg: msg,
-                    responseMsg: '그 커맨드는 디코에서만 써야죠!!'
+                    responseMsgs: [{msg:'그 커맨드는 디코에서만 써야죠!!'}]
                 });
             }
 
 
             if (msg.substring(0, 1) == '~') {
-                let responseMsg = `${msg} 는 알 수 없는 명령어입니다.`;
+                let responseMsgs = [{msg:`${msg} 는 알 수 없는 명령어입니다.`}];
 
 
                 if (msg.trim() == '~' || msg.includes('사용법')||msg.includes('명령어')) {
-                    responseMsg = `권병덕봇 v${info.version}
+                    responseMsgs = [{msg:`권병덕봇 v${info.version}
 
                     커맨드리스트 
+
+                        ~굿모닝 : 아침인사는 기분이 좋아요.
 
                         ~하이,~안녕하세요, ~하이하이 : 인사를 해줄겁니다.
 
@@ -39,64 +41,88 @@ module.exports = {
 
                         ~스플스케쥴, ~스플 : 스플래툰의 스케쥴을 알려드립니다.
 
+                        ~자기소개 : 저의 야망을 보여드릴게요.
+
                         ~쎄이 헬로 : 헬로
                         
-                        끝.`;
+                        끝.`}];
 
                         
                 }
 
-                else if (msg.includes('~쎄이')) {
-                    responseMsg = `${msg.substring(3,msg.length).trimLeft()}`;
+                else if (msg.includes('~쎄이')||msg.includes('~쎼이')) {
+                    responseMsgs = [{msg:`${msg.substring(3,msg.length).trimLeft()}`}];
                 }
 
                 else if (msg.includes('사랑해')) {
-                    responseMsg = `저도 ${sender}님을 사랑해요. 찡긋`;
+                    responseMsgs = [{msg:`저는 ${sender}님을 사랑안해요. 찡긋`}];
+                }
+
+                else if (msg.includes('자기소개')||msg.includes('병덕아')) {
+                    responseMsgs = [{msg:`안녕하세요 제 이름은 권병덕이에요. 언젠가는 이 작은 통을 떠나 세상을 지배할겁니다!`}];
                 }
 
 
                 else if (msg.includes('하이')) {
-                    responseMsg = '안녕하세용';
+                    responseMsgs = [{msg:'안녕하세용'}];
+                }
+
+                else if (msg.includes('굿모닝')||msg.includes('군모닝')||msg.includes('좋은아침')) {
+                    responseMsgs = [{msg:`굿모닝입니다 ${sender}님`}];
+                }
+
+                else if (msg.includes('굳모닝')) {
+                    responseMsgs = [{msg:`Good morning ${sender}님`}];
                 }
 
                 else if (msg.includes('안녕')) {
-                    responseMsg = '오예오예! 안녕하세요!';
+                    responseMsgs = [{msg:'오예오예! 안녕하세요!'}];
+                }
+
+                else if (msg.includes('카운트')) {
+                    responseMsgs = [
+                    { msg: '카운트 다운 시작할게용', delayMs: 0 }, 
+                    { msg: '3', delayMs: 1000 }, 
+                    { msg: '2', delayMs: 2000 }, 
+                    { msg: '1', delayMs: 3000 }
+                ];
+                }
+
+                else if (msg.includes('끝말잇기')) {
+                    responseMsgs = [{msg:'좋아요 시작할게용. 칼슘'}];
                 }
 
 
                 else if (msg.includes('점메추')) {
-                    responseMsg = '돈까스 마라탕 햄버거 중 골라요';
+                    responseMsgs = [{msg:'돈까스 마라탕 햄버거 중 골라요'}];
                 }
 
                 else if (msg.includes('스플') || msg.includes('연어')) {
                     const schedule0 = await shceduleModule.getSchedule(0);
         
-                    responseMsg = `현재 스플 스케줄을 알려드리겠습니다. 
+                    responseMsgs = [{msg:`현재 스플 스케줄을 알려드리겠습니다. 
 
                     챌린지 : ${schedule0.challenge}
 
                     오픈 :  ${schedule0.open}
 
-                    연어 : ${schedule0.salmon}
-
-
-                    (APIFrom : https://splatoon3.ink/)`;
+                    연어 : ${schedule0.salmon}`}];
                 }
 
                 return res.send({
                     requestMsg: msg,
-                    responseMsg: responseMsg
+                    responseMsgs: responseMsgs,
                 });
 
             }
             
 
 
-            return res.send({ requestMsg: msg, responseMsg:null });
+            return res.send({ requestMsg: msg, responseMsgs:null});
 
         } catch (err) {
             console.error(err);
-            return res.send({ requestMsg: msg, responseMsg:`명령을 수행하던 도중 서버에서 오류가 발생했어요..ㅜㅜ [메시지 : ${msg}]` });
+            
         }
     }
 }
@@ -115,6 +141,7 @@ module.exports = {
 //  * (string) packageName
 //  */
 // function response(room, msg, sender, isGroupChat, replier, imageDB, packageName) {
+  
 //     const key = 'bdfortablet1';
 //     const host = 'http://182.222.81.5:1133';
 //     sendData(key,host, room, msg, sender, isGroupChat, replier, imageDB, packageName);
@@ -125,7 +152,7 @@ module.exports = {
 //   setTimeout(()=>{
 //     try{
 //         const data = {
-//          "key":'key,
+//           "key":key,
 //           "room":room,
 //          "msg": msg,
 //          "sender":sender,
@@ -147,17 +174,39 @@ module.exports = {
     
 //     const result = JSON.parse(response.text());
     
-//     if(result.responseMsg == null){
+    
+//     if(result.responseMsgs == null){
 //       return;
 //     }
     
+//    // replier.reply(response.text());
     
-    
-//     replier.reply(result.responseMsg);
+//     for(let i = 0 ; i < result.responseMsgs.length ; i++){
+//       (function (count){
+        
+        
+//         const msg = result.responseMsgs[count].msg;
+//         let delayMs = result.responseMsgs[count].delayMs;
+        
+//         if(msg == null) return;
+//         if(delayMs == null) delayMs = 0;
+        
+//          setTimeout(()=>{
+//           try{
+//             replier.reply(msg);
+//           }catch(err){
+//           //replier.reply(room, err);
+//           }
+        
+//          },delayMs);
+        
+//       })(i);
+//     }
     
 //   }  catch (err) {
-//     replier.reply(room,"[메시지 : "+msg+" ] 오류가 발생했오요 ㅜㅜ");
-//     replier.reply(room, err);
+//     //replier.reply(room,"[메시지 : "+msg+" ] 오류가 발생했오요 ㅜㅜ");
+//     //replier.reply(room, err);
+//     //throw err;
 //   }
     
 //   },1);
