@@ -47,6 +47,8 @@ module.exports = {
                         ~쎄이 헬로 : 헬로
 
                         ~카운트다운 : 5부터 셀게요!
+
+                        ~가위바위보 : 가위바위보를 실시합니다. 시작됨과 동시에 바로 답을 입력해두세요^^
                         
                         끝.`}
                     ];
@@ -100,8 +102,22 @@ module.exports = {
                 ];
                 }
 
+                else if (msg.trim().includes('가위바위보')){
+                    responseMsgs = [
+                        { msg: '가위바위보를 할게요!', delayMs: 0 }, 
+                        { msg: '답은 정해져있으니 미리 입력해두세요.', delayMs: 1000 },
+                        { msg: '가위', delayMs: 4000 }, 
+                        { msg: '바위!!', delayMs: 7000 }, 
+                        { msg: `보!!!! (병덕이는 ${commoneModule.rspRandom()})`, delayMs: 10000 },
+                        { msg: '이하 탈락', delayMs: 11000 },
+                    ];
+                }
+
                 else if (msg.includes('끝말잇기')) {
-                    responseMsgs = [{msg:'좋아요 시작할게용. 칼슘'}];
+                    responseMsgs = [{msg:`좋아요 시작할게용.`},
+                    { msg: '칼륨', delayMs: 1500}, 
+                    { msg: '이겼네요 ㅎㅎ', delayMs: 3000}, 
+                ];
                 }
 
 
