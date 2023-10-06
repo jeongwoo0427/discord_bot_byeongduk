@@ -105,11 +105,12 @@ module.exports = {
                 else if (msg.trim().includes('가위바위보')){
                     responseMsgs = [
                         { msg: '가위바위보를 할게요!', delayMs: 0 }, 
-                        { msg: '답은 정해져있으니 미리 입력해두세요.', delayMs: 1000 },
-                        { msg: '가위', delayMs: 4000 }, 
-                        { msg: '바위!!', delayMs: 7000 }, 
-                        { msg: `보!!!! (병덕이는 ${commoneModule.rspRandom()})`, delayMs: 10000 },
-                        { msg: '이하 탈락', delayMs: 11000 },
+                        { msg: '카운트가 끝나기 전에 내주세요.', delayMs: 1000 },
+                        { msg: '3', delayMs: 3000 }, 
+                        { msg: '2', delayMs: 6000 }, 
+                        { msg: `1`, delayMs: 9000 },
+                        { msg: `${commoneModule.rspRandom()}!!`, delayMs: 12000 },
+                        { msg: '이하 탈락', delayMs: 13000 },
                     ];
                 }
 
