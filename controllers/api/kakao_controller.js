@@ -55,7 +55,7 @@ module.exports = {
                         
                 }
 
-                else if (msg == '~쎄이'||msg=='~쎼이') {
+                else if (msg.includes('~쎄이')||msg.includes('~쎼이')) {
                     responseMsgs = [{msg:`${msg.substring(3,msg.length).trimLeft()}`}];
                 }
 
