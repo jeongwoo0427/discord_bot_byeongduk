@@ -127,7 +127,7 @@ module.exports = {
                 //     ];
                 // }
 
-                else if (msg=='~스플'||msg=='~연어') {
+                else if (msg.includes('~스플')||msg.includes('~연어')) {
                     const schedule0 = await shceduleModule.getSchedule(0);
         
                     responseMsgs = [{msg:`현재 스플 스케줄을 알려드리겠습니다. 
