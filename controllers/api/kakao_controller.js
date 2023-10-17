@@ -144,7 +144,7 @@ module.exports = {
                     const openAIResponse = await openAIModule.create(startMessage);
                     console.log('발화='+startMessage);
                     console.log(openAIResponse);
-                    responseMsgs = [{msg:openAIResponse.choices[0].text.trimLeft()}];
+                    responseMsgs = [{msg:openAIResponse}];
                 }
 
                 

@@ -24,14 +24,9 @@ module.exports = {
         presence_penalty: 0,
       });
   
-      return response;
+      return response.choices[0].text.trimLeft();
     }catch(err){
-      return {
-        choices : [
-          {text : `GPT 관련 오류가 발생했습니다 : ${err.message}`}
-        ]
-      }
-
+      return  `GPT 관련 오류가 발생했습니다 : ${err.message}`;
     }
 
   }
