@@ -5,7 +5,8 @@ const openAIModule = require('../../module/openai_module');
 const info = require('../../info.json');
 
 
-const botKey = 'bdfortablet1';
+const botKey = 'bdfortablet1'; //내서버 녹스
+//const botKey = 'bdformobile1'; //집 폰
 
 module.exports = {
     messageReply: async (req, res, next) => {

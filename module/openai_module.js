@@ -12,19 +12,27 @@ const openai = new OpenAI({
 
 module.exports = {
   create: async (text) => {
+    try{
+      const response = await openai.completions.create({
+        model: "text-davinci-003",
+        //model:"gpt-3.5-turbo-instruct-0914",
+        prompt: text,
+        temperature: 1,
+        max_tokens: 256,
+        top_p: 1,
+        frequency_penalty: 0,
+        presence_penalty: 0,
+      });
+  
+      return response;
+    }catch(err){
+      return {
+        choices : [
+          {text : `GPT 관련 오류가 발생했습니다 : ${err.message}`}
+        ]
+      }
 
-    const response = await openai.completions.create({
-      model: "text-davinci-003",
-      //model:"gpt-3.5-turbo-instruct-0914",
-      prompt: text,
-      temperature: 1,
-      max_tokens: 256,
-      top_p: 1,
-      frequency_penalty: 0,
-      presence_penalty: 0,
-    });
-
-    return response;
+    }
 
   }
 }
