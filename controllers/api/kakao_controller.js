@@ -137,7 +137,10 @@ module.exports = {
 
                     오픈 :  ${schedule0.open}
 
-                    연어 : ${schedule0.salmon}`}];
+                    연어 : ${schedule0.salmon}
+                    
+                    Ref : https://splatoon3.ink/
+                    `}];
                 }else{
                     const startMessage =`너의 이름은 권병덕이야.\n\n네.\n\n앞으로 한 줄로 대답해줘.\n\n알겠습니다.\n\n${msg.substring(1,msg.length)}\n\n`;
                     
