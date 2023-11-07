@@ -250,8 +250,13 @@ function getVoice(message) {
     };
 
     if (cmd1 == '!' && cmd2 == 'j') return {
-            "languageCode": "ja-JP",
-            "name": "ja-JP-Wavenet-A"
+        "languageCode": "ja-JP",
+        "name": "ja-JP-Neural2-C",
+    };
+
+    if (cmd1 == '*' && cmd2 == 'j') return {
+        "languageCode": "ja-JP",
+        "name": "ja-JP-Wavenet-A"
     };
 
 
@@ -278,11 +283,11 @@ function getClearMessage(message) {
 
     let clearMessage = '';
 
-    if (cmd1 == '!' || cmd1 == '*'){ 
-        if (cmd2 == '!' || cmd2 == '*' || cmd2 =='e' || cmd2 =='j') clearMessage = message.substring(2)
+    if (cmd1 == '!' || cmd1 == '*') {
+        if (cmd2 == '!' || cmd2 == '*' || cmd2 == 'e' || cmd2 == 'j') clearMessage = message.substring(2)
         else clearMessage = message.substring(1);
     }
-   
+
 
     return clearMessage;
 }
