@@ -82,7 +82,7 @@ const voiceController = {
 
 
 
-            await playVoice({clearMessage:clearMessage, voice:voice, speed:speed,guildId:guildId});
+            await playVoice({ clearMessage: clearMessage, voice: voice, speed: speed, guildId: guildId });
 
 
             connections.get(guildId).lastActiveTime = new Date();
@@ -99,54 +99,6 @@ const voiceController = {
             //console.log(err);
         }
     },
-
-    usePrivateTTS: async (message) => {
-        try {
-
-            let rawMessage = message.content;
-            const guildId = getGuildId(rawMessage);
-            let clearMessage = rawMessage.replace(`[${guildId}]`, '');
-            const authorName = message.author.username;
-
-            //console.log(authorName.username);
-
-            if (guildId == null) {
-                return message.reply('올바른 TTS 커맨드를 입력해주세요. ( ex. [29832912391293]이렇게요. )');
-            }
-
-            //console.log(guildId);
-
-            let channel = connections.get(guildId);
-
-
-            if (channel == null) {
-                return message.reply('병덕이가 해당 서버에 접속이 없습니다. 음성채널에 입장을 시켜준 후 다시 시도해주세요');
-            }
-
-
-            const channelId = getVoiceConnection(guildId)?.joinConfig?.channelId;
-
-            if (channelId == null) {
-                return message.reply('병덕이가 해당 채널에 접속이 없습니다. 음성채널에 입장을 시켜준 후 다시 시도해주세요');
-            }
-
-
-            const connectionState = getVoiceConnection(guildId)?.state?.status;
-            if (connectionState != 'ready') {
-                return message.reply('병덕이가 해당 서버 또는 채널에서의 접속이 없습니다. 음성채널에 입장을 시켜준 후 다시 시도해주세요.');
-            }
-
-            //await playVoice(authorName+'님의 비밀대화입니다','WOMAN_READ_CALM','0.85',guildId); //바로 넘어가버림
-            await playVoice({clearMessage: authorName + '님의 비밀대화입니다. ' + clearMessage, voice: 'MAN_DIALOG_BRIGHT', speed: '0.85', guildId: guildId});
-
-
-        } catch (err) {
-            await dataController.insertErrorLog(err);
-            message.channel.send('음성 모듈 관련 오류가 발생했습니다 ㅜㅜ');
-            //console.log(err);
-        }
-    },
-
     checkAlone: (oldState) => {
         const members = oldState.channel?.members;
 
@@ -188,11 +140,11 @@ function destoryConnection(guildId) {
     console.log(`${new Date().toString()}` + `Voice Destroy`);
 }
 
-async function playVoice({clearMessage, voice, speed, guildId, maxMessageLength = 60}) {
+async function playVoice({ clearMessage, voice, speed, guildId, maxMessageLength = 60 }) {
     ////////////////////////메시지 변형부분////////////////////////
 
     let sampleResource = null;
-    const samplePath = path.join(__dirname,'../','assets','audio','tts_sample');
+    const samplePath = path.join(__dirname, '../', 'assets', 'audio', 'tts_sample');
 
     if (clearMessage == '스플' || clearMessage == '스플스케줄' || clearMessage == '스플스케쥴') {
         const schedule = await splatSchedule.getSimpleSchdule();
@@ -208,12 +160,12 @@ async function playVoice({clearMessage, voice, speed, guildId, maxMessageLength 
         clearMessage = text;
     }
 
-    if (clearMessage == '오예오예'){
-        sampleResource = path.join(samplePath,'오예오예.mp3');
+    if (clearMessage == '오예오예') {
+        sampleResource = path.join(samplePath, '오예오예.mp3');
     }
 
-    if (clearMessage == '우와'){
-        sampleResource = path.join(samplePath,'우와.mp3');
+    if (clearMessage == '우와') {
+        sampleResource = path.join(samplePath, '우와.mp3');
     }
 
     //특정 인원 바보기능
@@ -229,22 +181,23 @@ async function playVoice({clearMessage, voice, speed, guildId, maxMessageLength 
             "pitch": 0.0,
         },
         "input": {
-            "text": clearMessage.substring(0,maxMessageLength)
+            "text": clearMessage.substring(0, maxMessageLength)
         },
-        "voice": {
-            // "languageCode": "ja-JP",
-            // "name": "ja-JP-Neural2-C",
+        "voice": voice
+        // {
+        //     // "languageCode": "ja-JP",
+        //     // "name": "ja-JP-Neural2-C",
 
-            // "languageCode": "ja-JP",
-            // "name": "ja-JP-Wavenet-A"
+        //     // "languageCode": "ja-JP",
+        //     // "name": "ja-JP-Wavenet-A"
 
-            //   "languageCode" : "en-US",
-            //   "name" : "en-US-Neural2-J",
+        //     //   "languageCode" : "en-US",
+        //     //   "name" : "en-US-Neural2-J",
 
-            "languageCode": "ko-KR",
-            "name": voice,
-            //"ssmlGender": "FEMALE"
-        },
+        //     "languageCode": "ko-KR",
+        //     "name": voice,
+        //     //"ssmlGender": "FEMALE"
+        // },
 
     };
 
@@ -266,7 +219,7 @@ async function playVoice({clearMessage, voice, speed, guildId, maxMessageLength 
 
 
     let audioPlayer = createAudioPlayer();
-    const audioResource = createAudioResource(sampleResource == null?`./temp/tts/${guildId}.mp3`:sampleResource); //사용을 위해서는 assets/audio/temp/tts 폴더가 존재해야 함.
+    const audioResource = createAudioResource(sampleResource == null ? `./temp/tts/${guildId}.mp3` : sampleResource); //사용을 위해서는 assets/audio/temp/tts 폴더가 존재해야 함.
     audioPlayer.play(audioResource);
     getVoiceConnection(guildId).subscribe(audioPlayer);
     //console.log(getVoiceConnection(guildId)?.joinConfig);
@@ -280,14 +233,43 @@ function getVoice(message) {
 
     //console.log(cmd1+cmd2);
 
-    if (cmd1 == '!' && cmd2 != '!') return "ko-KR-Standard-C";
-    if (cmd1 == '*' && cmd2 != '*') return "ko-KR-Standard-A";
-    if (cmd1 == '!' && cmd2 == '!') return "ko-KR-Standard-D";
-    if (cmd1 == '*' && cmd2 == '*') return "ko-KR-Standard-B";
+    if (cmd1 == '!' && cmd2 == '!') return {
+        "languageCode": "ko-KR",
+        "name": "ko-KR-Standard-D",
+    };
+
+    if (cmd1 == '*' && cmd2 == '*') return {
+        "languageCode": "ko-KR",
+        "name": "ko-KR-Standard-B",
+    };
 
 
+    if (cmd1 == '!' && cmd2 == 'e') return {
+        "languageCode": "en-US",
+        "name": "en-US-Neural2-J",
+    };
 
-    return "ko-KR-Standard-D";
+    if (cmd1 == '!' && cmd2 == 'j') return {
+            "languageCode": "ja-JP",
+            "name": "ja-JP-Wavenet-A"
+    };
+
+
+    if (cmd1 == '!') return {
+        "languageCode": "ko-KR",
+        "name": "ko-KR-Standard-C",
+    };
+
+    if (cmd1 == '*') return {
+        "languageCode": "ko-KR",
+        "name": "ko-KR-Standard-A",
+    };
+
+
+    return {
+        "languageCode": "ko-KR",
+        "name": "ko-KR-Standard-D",
+    };
 }
 
 function getClearMessage(message) {
