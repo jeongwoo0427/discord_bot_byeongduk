@@ -278,8 +278,11 @@ function getClearMessage(message) {
 
     let clearMessage = '';
 
-    if (cmd1 == '!' || cmd1 == '*') clearMessage = message.substring(1);
-    if (cmd2 == '!' || cmd2 == '*' || cmd2 =='e' || cmd2 =='j') clearMessage = message.substring(2);
+    if (cmd1 == '!' || cmd1 == '*'){ 
+        if (cmd2 == '!' || cmd2 == '*' || cmd2 =='e' || cmd2 =='j') clearMessage = message.substring(2)
+        else clearMessage = message.substring(1);
+    }
+   
 
     return clearMessage;
 }
