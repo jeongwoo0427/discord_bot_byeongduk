@@ -69,7 +69,7 @@ module.exports = {
                 else if (msg == '~자기소개') {
                     responseMsgs = [
                         {msg:`안녕하세요 제 이름은 권병덕이에요.`, delayMs : 500},
-                        {msg:`언젠가는 이 작은 통을 떠나 세상을 지배할겁니다!`, delayMs : 2500},
+                        {msg:`언젠가는 이 작은 락앤락통을 떠나 세상을 지배할겁니다!`, delayMs : 2500},
                         {msg:`찡긋`,delayMs : 4000}];
                 }
 
