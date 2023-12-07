@@ -18,7 +18,6 @@ const messageRoute = async (message) =>{
 
     if(message.content.substring(0,1) == `*`||message.content.substring(0,1) == `!`)return voiceController.useUserTTS(message);
 
-    if(message.content.substring(0,1) == `[`) return voiceController.usePrivateTTS(message);
     
 
 

@@ -4,7 +4,7 @@ const path = require('node:path');
 //const discordTTS = require('discord-tts');
 const config = require('../config.json');
 const request = require('request');
-const { createAudioPlayer, createAudioResource, joinVoiceChannel, VoiceConnection, getVoiceConnection } = require('@discordjs/voice');
+const { createAudioPlayer, createAudioResource, joinVoiceChannel, VoiceConnection, getVoiceConnection,AudioPlayerStatus } = require('@discordjs/voice');
 const splatSchedule = require('../module/splat3_schedule_module');
 const timeModule = require('../module/time_module');
 const proRequest = require('../module/pomised_request_module');
@@ -64,7 +64,9 @@ const voiceController = {
                 connections.set(guildId, {
                     channelId: null,
                     lastActiveTime: new Date(),
-                })
+                    audioPlayer: null,
+                    audioResourceStack : []
+                });
 
                 connection?.destroy();
 
@@ -82,16 +84,16 @@ const voiceController = {
 
 
 
-            await playVoice({clearMessage:clearMessage, voice:voice, speed:speed,guildId:guildId});
+            await playVoice({ clearMessage: clearMessage, voice: voice, speed: speed, guildId: guildId });
 
 
             connections.get(guildId).lastActiveTime = new Date();
 
 
-            console.log(`connectionState=${liveState}`);
-            console.log('guildId=' + guildId + ' channelId=' + channelId);
-            console.log(`clearMessage=${clearMessage}`)
-            console.log(`===============================================================================`);
+            // console.log(`connectionState=${liveState}`);
+            // console.log('guildId=' + guildId + ' channelId=' + channelId);
+            // console.log(`clearMessage=${clearMessage}`)
+            // console.log(`===============================================================================`);
 
         } catch (err) {
             await dataController.insertErrorLog(err);
@@ -99,54 +101,6 @@ const voiceController = {
             //console.log(err);
         }
     },
-
-    usePrivateTTS: async (message) => {
-        try {
-
-            let rawMessage = message.content;
-            const guildId = getGuildId(rawMessage);
-            let clearMessage = rawMessage.replace(`[${guildId}]`, '');
-            const authorName = message.author.username;
-
-            //console.log(authorName.username);
-
-            if (guildId == null) {
-                return message.reply('올바른 TTS 커맨드를 입력해주세요. ( ex. [29832912391293]이렇게요. )');
-            }
-
-            //console.log(guildId);
-
-            let channel = connections.get(guildId);
-
-
-            if (channel == null) {
-                return message.reply('병덕이가 해당 서버에 접속이 없습니다. 음성채널에 입장을 시켜준 후 다시 시도해주세요');
-            }
-
-
-            const channelId = getVoiceConnection(guildId)?.joinConfig?.channelId;
-
-            if (channelId == null) {
-                return message.reply('병덕이가 해당 채널에 접속이 없습니다. 음성채널에 입장을 시켜준 후 다시 시도해주세요');
-            }
-
-
-            const connectionState = getVoiceConnection(guildId)?.state?.status;
-            if (connectionState != 'ready') {
-                return message.reply('병덕이가 해당 서버 또는 채널에서의 접속이 없습니다. 음성채널에 입장을 시켜준 후 다시 시도해주세요.');
-            }
-
-            //await playVoice(authorName+'님의 비밀대화입니다','WOMAN_READ_CALM','0.85',guildId); //바로 넘어가버림
-            await playVoice({clearMessage: authorName + '님의 비밀대화입니다. ' + clearMessage, voice: 'MAN_DIALOG_BRIGHT', speed: '0.85', guildId: guildId});
-
-
-        } catch (err) {
-            await dataController.insertErrorLog(err);
-            message.channel.send('음성 모듈 관련 오류가 발생했습니다 ㅜㅜ');
-            //console.log(err);
-        }
-    },
-
     checkAlone: (oldState) => {
         const members = oldState.channel?.members;
 
@@ -188,16 +142,13 @@ function destoryConnection(guildId) {
     console.log(`${new Date().toString()}` + `Voice Destroy`);
 }
 
-async function playVoice({clearMessage, voice, speed, guildId, maxMessageLength = 30}) {
+async function playVoice({ clearMessage, voice, speed, guildId, maxMessageLength = 80 }) {
     ////////////////////////메시지 변형부분////////////////////////
-
-    let sampleResource = null;
-    const samplePath = path.join(__dirname,'../','assets','audio','tts_sample');
 
     if (clearMessage == '스플' || clearMessage == '스플스케줄' || clearMessage == '스플스케쥴') {
         const schedule = await splatSchedule.getSimpleSchdule();
         speed = 1.0;
-        clearMessage = `현재 스플 스케줄을 알려드리겠습니다. 챌린지는 ${schedule.challenge}, 오픈은 ${schedule.open}, 연어는 ${schedule.salmon}이고 무기는 ${schedule.salmonWeapon[0]},${schedule.salmonWeapon[1]},${schedule.salmonWeapon[2]},${schedule.salmonWeapon[3]} 입니다, 겸사겸사, 사랑해`
+        clearMessage = `현재 스플 스케줄을 알려드리겠습니다. 챌린지는 ${schedule.challenge}, 오픈은 ${schedule.open}, 연어는 ${schedule.salmon}이고 무기는 ${schedule.salmonWeapon[0]},${schedule.salmonWeapon[1]},${schedule.salmonWeapon[2]},${schedule.salmonWeapon[3]} 입니다. 즐거운 스플래툰 되세요.`
         maxMessageLength = 200;
     }
 
@@ -206,14 +157,6 @@ async function playVoice({clearMessage, voice, speed, guildId, maxMessageLength 
         speed = 1.0;
         //message.channel.send(text);
         clearMessage = text;
-    }
-
-    if (clearMessage == '오예오예'){
-        sampleResource = path.join(samplePath,'오예오예.mp3');
-    }
-
-    if (clearMessage == '우와'){
-        sampleResource = path.join(samplePath,'우와.mp3');
     }
 
     //특정 인원 바보기능
@@ -229,24 +172,13 @@ async function playVoice({clearMessage, voice, speed, guildId, maxMessageLength 
             "pitch": 0.0,
         },
         "input": {
-            "text": clearMessage.substring(0,maxMessageLength)
+            "text": clearMessage.substring(0, maxMessageLength)
         },
-        "voice": {
-            // "languageCode": "ja-JP",
-            // "name": "ja-JP-Neural2-C",
-
-            // "languageCode": "ja-JP",
-            // "name": "ja-JP-Wavenet-A"
-
-            //   "languageCode" : "en-US",
-            //   "name" : "en-US-Neural2-J",
-
-            "languageCode": "ko-KR",
-            "name": voice,
-            //"ssmlGender": "FEMALE"
-        },
+        "voice": voice
 
     };
+
+    const file = `./temp/tts/${guildId}_${Date.now()}.mp3`;
 
     await proRequest.download(
         {
@@ -257,18 +189,45 @@ async function playVoice({clearMessage, voice, speed, guildId, maxMessageLength 
                 'Content-Type': 'application/json'
             },
             encoding: null,
-            json: jsonData,
-            //body: jsonData,
+            json: jsonData, 
         },
 
-        `./temp/tts/${guildId}.mp3`);
+        file);
 
+    
+    const sss = [];
+  
 
+    const connection = connections.get(guildId);
+    connection.audioResourceStack.push(file);
 
-    let audioPlayer = createAudioPlayer();
-    const audioResource = createAudioResource(sampleResource == null?`./temp/tts/${guildId}.mp3`:sampleResource); //사용을 위해서는 assets/audio/temp/tts 폴더가 존재해야 함.
-    audioPlayer.play(audioResource);
-    getVoiceConnection(guildId).subscribe(audioPlayer);
+    if(connection.audioPlayer == null){
+        let audioPlayer = createAudioPlayer();
+        getVoiceConnection(guildId).subscribe(audioPlayer);
+
+        connection.audioPlayer = audioPlayer;
+        connection.audioPlayer.on('stateChange',(oldState,newState)=>{
+            if(oldState.status == AudioPlayerStatus.Playing && newState.status == AudioPlayerStatus.Idle){
+                console.log('이전 오디오 플레이 완료!');
+                const nextFile = connection.audioResourceStack[0];
+                if(nextFile != null){ 
+                    const audioResource = createAudioResource(nextFile); //사용을 위해서는 assets/audio/temp/tts 폴더가 존재해야 함.
+                    connection.audioPlayer.play(audioResource);
+                    connection.audioResourceStack.shift();
+                }
+            }
+        });
+    }
+
+    if(connection.audioPlayer._state.status == AudioPlayerStatus.Idle){
+        const nextFile = connection.audioResourceStack[0];
+        if(nextFile != null){
+            const audioResource = createAudioResource(nextFile); //사용을 위해서는 assets/audio/temp/tts 폴더가 존재해야 함.
+            connection.audioPlayer.play(audioResource);
+            connection.audioResourceStack.shift();
+        }
+    }
+
     //console.log(getVoiceConnection(guildId)?.joinConfig);
 
 }
@@ -280,14 +239,55 @@ function getVoice(message) {
 
     //console.log(cmd1+cmd2);
 
-    if (cmd1 == '!' && cmd2 != '!') return "ko-KR-Standard-C";
-    if (cmd1 == '*' && cmd2 != '*') return "ko-KR-Standard-A";
-    if (cmd1 == '!' && cmd2 == '!') return "ko-KR-Standard-D";
-    if (cmd1 == '*' && cmd2 == '*') return "ko-KR-Standard-B";
+    if (cmd1 == '!' && cmd2 == '!') return {
+        "languageCode": "ko-KR",
+        "name": "ko-KR-Standard-D",
+    };
+
+    if (cmd1 == '*' && cmd2 == '*') return {
+        "languageCode": "ko-KR",
+        "name": "ko-KR-Standard-B",
+    };
+
+
+    if (cmd1 == '!' && cmd2 == 'e') return {
+        "languageCode": "en-US",
+        "name": "en-US-Neural2-J",
+    };
+
+    if (cmd1 == '!' && cmd2 == 'j') return {
+        "languageCode": "ja-JP",
+        "name": "ja-JP-Neural2-C",
+    };
+
+    if (cmd1 == '!' && cmd2 == 's') return {
+        "languageCode": "es-ES",
+        "name": "es-ES-Neural2-F"
+      };
+
+    if (cmd1 == '*' && cmd2 == 'j') return {
+        "languageCode": "ja-JP",
+        "name": "ja-JP-Wavenet-A"
+    };
 
 
 
-    return "ko-KR-Standard-D";
+
+    if (cmd1 == '!') return {
+        "languageCode": "ko-KR",
+        "name": "ko-KR-Standard-C",
+    };
+
+    if (cmd1 == '*') return {
+        "languageCode": "ko-KR",
+        "name": "ko-KR-Standard-A",
+    };
+
+
+    return {
+        "languageCode": "ko-KR",
+        "name": "ko-KR-Standard-D",
+    };
 }
 
 function getClearMessage(message) {
@@ -296,8 +296,11 @@ function getClearMessage(message) {
 
     let clearMessage = '';
 
-    if (cmd1 == '!' || cmd1 == '*') clearMessage = message.substring(1);
-    if (cmd2 == '!' || cmd2 == '*') clearMessage = message.substring(2);
+    if (cmd1 == '!' || cmd1 == '*') {
+        if (cmd2 == '!' || cmd2 == '*' || cmd2 == 'e' || cmd2 == 'j' || cmd2 == 's') clearMessage = message.substring(2)
+        else clearMessage = message.substring(1);
+    }
+
 
     return clearMessage;
 }
