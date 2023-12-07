@@ -4,7 +4,7 @@ const path = require('node:path');
 //const discordTTS = require('discord-tts');
 const config = require('../config.json');
 const request = require('request');
-const { createAudioPlayer, createAudioResource, joinVoiceChannel, VoiceConnection, getVoiceConnection } = require('@discordjs/voice');
+const { createAudioPlayer, createAudioResource, joinVoiceChannel, VoiceConnection, getVoiceConnection,AudioPlayerStatus } = require('@discordjs/voice');
 const splatSchedule = require('../module/splat3_schedule_module');
 const timeModule = require('../module/time_module');
 const proRequest = require('../module/pomised_request_module');
@@ -184,22 +184,11 @@ async function playVoice({ clearMessage, voice, speed, guildId, maxMessageLength
             "text": clearMessage.substring(0, maxMessageLength)
         },
         "voice": voice
-        // {
-        //     // "languageCode": "ja-JP",
-        //     // "name": "ja-JP-Neural2-C",
-
-        //     // "languageCode": "ja-JP",
-        //     // "name": "ja-JP-Wavenet-A"
-
-        //     //   "languageCode" : "en-US",
-        //     //   "name" : "en-US-Neural2-J",
-
-        //     "languageCode": "ko-KR",
-        //     "name": voice,
-        //     //"ssmlGender": "FEMALE"
-        // },
 
     };
+
+    const filePath = './temp/tts/';
+    const fileName = `${guildId}.mp3`;
 
     await proRequest.download(
         {
@@ -214,14 +203,25 @@ async function playVoice({ clearMessage, voice, speed, guildId, maxMessageLength
             //body: jsonData,
         },
 
-        `./temp/tts/${guildId}.mp3`);
+        filePath+fileName);
 
 
 
     let audioPlayer = createAudioPlayer();
-    const audioResource = createAudioResource(sampleResource == null ? `./temp/tts/${guildId}.mp3` : sampleResource); //사용을 위해서는 assets/audio/temp/tts 폴더가 존재해야 함.
-    audioPlayer.play(audioResource);
     getVoiceConnection(guildId).subscribe(audioPlayer);
+
+    audioPlayer.on('stateChange',(oldState,newState)=>{
+        //console.log(oldState.status,newState.status);
+        // console.log(oldState.status);
+        // console.log(newState.status);
+        if(oldState.status == AudioPlayerStatus.Playing && newState.status == AudioPlayerStatus.Idle){
+            console.log('이전 오디오 플레이 완료!');
+        }
+    });
+    
+    const audioResource = createAudioResource(sampleResource == null ? filePath+fileName : sampleResource); //사용을 위해서는 assets/audio/temp/tts 폴더가 존재해야 함.
+    audioPlayer.play(audioResource);
+
     //console.log(getVoiceConnection(guildId)?.joinConfig);
 
 }
