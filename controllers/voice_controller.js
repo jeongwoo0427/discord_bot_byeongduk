@@ -194,10 +194,6 @@ async function playVoice({ clearMessage, voice, speed, guildId, maxMessageLength
 
         file);
 
-    
-    const sss = [];
-  
-
     const connection = connections.get(guildId);
     connection.audioResourceStack.push(file);
 
