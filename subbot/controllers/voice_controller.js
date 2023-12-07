@@ -3,7 +3,7 @@ const path = require('node:path');
 //const discordTTS = require('discord-tts');
 const config = require('../config.json');
 const request = require('request');
-const { createAudioPlayer, createAudioResource, joinVoiceChannel, VoiceConnection, getVoiceConnection } = require('@discordjs/voice');
+const { createAudioPlayer, createAudioResource, joinVoiceChannel, VoiceConnection, getVoiceConnection,AudioPlayerStatus } = require('@discordjs/voice');
 const splatSchedule = require('../module/splat3_schedule_module');
 const timeModule = require('../module/time_module');
 const proRequest = require('../module/pomised_request_module');
@@ -62,6 +62,8 @@ const voiceController = {
                 connections.set(guildId,{
                     channelId: null,
                     lastActiveTime: new Date(),
+                    audioPlayer: null,
+                    audioResourceStack : []
                 })
 
                 connection?.destroy();
@@ -184,11 +186,8 @@ function destoryConnection(guildId) {
 }
 
 
-async function playVoice({clearMessage, voice, speed, guildId,maxMessageLength=30}) {
+async function playVoice({clearMessage, voice, speed, guildId,maxMessageLength=80}) {
     ////////////////////////메시지 변형부분////////////////////////
-
-    let sampleResource = null;
-    const samplePath = path.join(__dirname,'../','../','assets','audio','tts_sample');
 
     if (clearMessage == '스플' || clearMessage == '스플스케줄' || clearMessage == '스플스케쥴') {
         const schedule = await splatSchedule.getSimpleSchdule();
@@ -204,13 +203,6 @@ async function playVoice({clearMessage, voice, speed, guildId,maxMessageLength=3
         clearMessage = text;
     }
 
-    if (clearMessage == '오예오예'){
-        sampleResource = path.join(samplePath,'오예오예.mp3');
-    }
-
-    if (clearMessage == '우와'){
-        sampleResource = path.join(samplePath,'우와.mp3');
-    }
 
     //특정 인원 바보기능
     //    if(author == '733572758499229766'){ //산들
@@ -233,6 +225,8 @@ async function playVoice({clearMessage, voice, speed, guildId,maxMessageLength=3
           "audioEncoding":"MP3"
         }
       };
+
+    const file = `./temp/sub_tts/${guildId}_${Date.now()}.mp3`;
         
     await proRequest.download(
         {
@@ -245,12 +239,37 @@ async function playVoice({clearMessage, voice, speed, guildId,maxMessageLength=3
             encoding: null,
             json : jsonData,
             //body: jsonData,
-        },`./temp/sub_tts/${guildId}.mp3`);
+        },file);
 
-    let audioPlayer = createAudioPlayer();
-    const audioResource = createAudioResource(sampleResource==null?`./temp/sub_tts/${guildId}.mp3`:sampleResource); //사용을 위해서는 assets/audio/temp/tts 폴더가 존재해야 함.
-    audioPlayer.play(audioResource);
-    getVoiceConnection(guildId).subscribe(audioPlayer);
+        const connection = connections.get(guildId);
+        connection.audioResourceStack.push(file);
+    
+        if(connection.audioPlayer == null){
+            let audioPlayer = createAudioPlayer();
+            getVoiceConnection(guildId).subscribe(audioPlayer);
+    
+            connection.audioPlayer = audioPlayer;
+            connection.audioPlayer.on('stateChange',(oldState,newState)=>{
+                if(oldState.status == AudioPlayerStatus.Playing && newState.status == AudioPlayerStatus.Idle){
+                    console.log('이전 오디오 플레이 완료!');
+                    const nextFile = connection.audioResourceStack[0];
+                    if(nextFile != null){ 
+                        const audioResource = createAudioResource(nextFile); //사용을 위해서는 assets/audio/temp/tts 폴더가 존재해야 함.
+                        connection.audioPlayer.play(audioResource);
+                        connection.audioResourceStack.shift();
+                    }
+                }
+            });
+        }
+    
+        if(connection.audioPlayer._state.status == AudioPlayerStatus.Idle){
+            const nextFile = connection.audioResourceStack[0];
+            if(nextFile != null){
+                const audioResource = createAudioResource(nextFile); //사용을 위해서는 assets/audio/temp/tts 폴더가 존재해야 함.
+                connection.audioPlayer.play(audioResource);
+                connection.audioResourceStack.shift();
+            }
+        }
 }
 
 function getVoice(message) {
