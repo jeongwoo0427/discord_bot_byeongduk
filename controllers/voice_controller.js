@@ -5,7 +5,7 @@ const path = require('node:path');
 const config = require('../config.json');
 const request = require('request');
 const { createAudioPlayer, createAudioResource, joinVoiceChannel, VoiceConnection, getVoiceConnection,AudioPlayerStatus } = require('@discordjs/voice');
-const splatSchedule = require('../module/splat3_schedule_module');
+const splatSchedule = require('../module/splat3_module');
 const timeModule = require('../module/time_module');
 const proRequest = require('../module/pomised_request_module');
 

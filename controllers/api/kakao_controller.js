@@ -1,5 +1,5 @@
 const statusModule = require('../../module/status_module');
-const shceduleModule = require('../../module/splat3_schedule_module');
+const shceduleModule = require('../../module/splat3_module');
 const commoneModule = require('../../module/common_module');
 const openAIModule = require('../../module/openai_module');
 const info = require('../../info.json');

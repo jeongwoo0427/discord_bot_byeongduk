@@ -49,6 +49,11 @@ function _convertSchedule(dataJson, langJson, sequence) {
     }
 }
 
+function getRandom(min, max)
+{
+	return Math.floor(Math.random() * (max - min + 1) + min);
+} 
+
 module.exports = {
     getSchedule: async (sequence) => {
         const scheduleJson = JSON.parse(await request.get('https://splatoon3.ink/data/schedules.json'));
@@ -83,5 +88,31 @@ module.exports = {
                 schdule.salmon.weapons[3].name.replace(' ','')
             ]
         }
+    },
+
+    randomMatchWeapons : async (users) => {
+        const localeJson = JSON.parse(await request.get('https://splatoon3.ink/data/locale/ko-KR.json'));
+        const weaponsJsonArray = Object.values(localeJson.weapons);
+
+        const weapons = [];
+        for(let i =0; i<weaponsJsonArray.length; i++){
+            weapons.push(weaponsJsonArray[i].name);
+        }
+
+        const matchedUsers = []; 
+
+        for(let i = 0; i<users.length; i++){
+            matchedUsers.push({
+                user : users[i],
+                weapon : weapons[getRandom(0,weapons.length-1)]
+            })
+        }
+
+        return matchedUsers;
+    },
+
+    getRandomMap : async() =>{
+        const localeJson = JSON.parse(await request.get('https://splatoon3.ink/data/locale/ko-KR.json'));
+        const weaponsJsonArray = Object.values(localeJson.weapons);
     }
 }
