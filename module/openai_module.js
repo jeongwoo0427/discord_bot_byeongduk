@@ -11,15 +11,12 @@ const openai = new OpenAI({
 
 
 module.exports = {
-  create: async (system,text) => {
+  create: async (messages) => {
     try {
 
       const response = await openai.chat.completions.create({
         "model": "gpt-4",
-        "messages": [
-          //{"role": "system", "content": system},
-          {"role": "user", "content": text},
-        ],
+        "messages": messages,
         "temperature": 0.7
       })
       // const response = await openai.completions.create({

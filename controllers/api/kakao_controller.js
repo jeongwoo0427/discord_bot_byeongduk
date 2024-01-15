@@ -143,10 +143,19 @@ module.exports = {
                     `}];
                 }else{
                     
-                    const system = '너의 이름은 권병덕이야. \n';
                     const startMessage =`${msg.substring(1,msg.length)}`;
+                    const messages = [
+                        {"role": "system", "content": "너는 간단한 대답을 하는 내 친구야."},
+                        {"role": "user", "content": "대답은 짧게 하도록 해."},
+                        {"role": "assistant", "content": "네, 알겠습니다."},
+                        //{"role": "assistant", "content": "오키"},
+                        {"role": "user", "content": "그리고 너의 이름은 이제부터 권병덕이야. 아빠의 이름은 베이즈고."},
+                        {"role": "assistant", "content": "네"},
+                        //{"role": "assistant", "content": "알겠어!"},
+                        {"role": "user", "content": startMessage},
+                    ];
                     
-                    const openAIResponse = await openAIModule.create(system,startMessage);
+                    const openAIResponse = await openAIModule.create(messages);
                     console.log('발화='+startMessage);
                     console.log(openAIResponse);
                     responseMsgs = [{msg:openAIResponse}];
