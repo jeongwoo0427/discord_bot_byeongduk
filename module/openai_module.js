@@ -11,22 +11,41 @@ const openai = new OpenAI({
 
 
 module.exports = {
-  create: async (text) => {
-    try{
-      const response = await openai.completions.create({
-        model: "text-davinci-003",
-        //model:"gpt-3.5-turbo-instruct-0914",
-        prompt: text,
-        temperature: 1,
-        max_tokens: 256,
-        top_p: 1,
-        frequency_penalty: 0,
-        presence_penalty: 0,
-      });
-  
-      return response.choices[0].text.trimLeft();
-    }catch(err){
-      return  `GPT 관련 오류가 발생했습니다 : ${err.message}`;
+  create: async (system,text) => {
+    try {
+
+      const response = await openai.chat.completions.create({
+        "model": "gpt-4",
+        "messages": [
+          {"role": "system", "content": system},
+          {"role": "user", "content": text},
+        ],
+        "temperature": 0.7
+      })
+      // const response = await openai.completions.create({
+      //   model: "gpt-4",
+      //   //model:"gpt-3.5-turbo-instruct-0914",
+      //   //prompt: text,
+      //   messages: [
+      //     {
+      //       "role": "system",
+      //       "content": "너의 이름은 권병덕이야."
+      //     },
+      //     {
+      //       "role": "user",
+      //       "content": text
+      //     },
+      //   ],
+      //   // temperature: 1,
+      //   // max_tokens: 256,
+      //   // top_p: 1,
+      //   // frequency_penalty: 0,
+      //   // presence_penalty: 0,
+      // });
+
+      return response.choices[0].message.content.trimLeft();
+    } catch (err) {
+      return `GPT 관련 오류가 발생했습니다 : ${err}`;
     }
 
   }

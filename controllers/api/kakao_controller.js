@@ -142,9 +142,11 @@ module.exports = {
                     Ref : https://splatoon3.ink/
                     `}];
                 }else{
-                    const startMessage =`너의 이름은 권병덕이야.\n\n네.\n\n앞으로 한 줄로 대답해줘.\n\n알겠습니다.\n\n${msg.substring(1,msg.length)}\n\n`;
                     
-                    const openAIResponse = await openAIModule.create(startMessage);
+                    const system = '너의 이름은 권병덕이야. \n';
+                    const startMessage =`${msg.substring(1,msg.length)}`;
+                    
+                    const openAIResponse = await openAIModule.create(system,startMessage);
                     console.log('발화='+startMessage);
                     console.log(openAIResponse);
                     responseMsgs = [{msg:openAIResponse}];
