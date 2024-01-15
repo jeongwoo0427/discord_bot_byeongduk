@@ -143,7 +143,7 @@ module.exports = {
                     `}];
                 }else{
                     
-                    //const system = '너의 이름은 권병덕이야. \n';
+                    const system = '너의 이름은 권병덕이야. \n';
                     const startMessage =`${msg.substring(1,msg.length)}`;
                     
                     const openAIResponse = await openAIModule.create(system,startMessage);
