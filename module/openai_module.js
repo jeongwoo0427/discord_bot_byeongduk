@@ -17,7 +17,7 @@ module.exports = {
       const response = await openai.chat.completions.create({
         "model": "gpt-4",
         "messages": [
-          {"role": "system", "content": system},
+          //{"role": "system", "content": system},
           {"role": "user", "content": text},
         ],
         "temperature": 0.7
