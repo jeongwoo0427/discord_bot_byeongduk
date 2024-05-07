@@ -197,7 +197,7 @@ module.exports = {
 // function response(room, msg, sender, isGroupChat, replier, imageDB, packageName) {
   
 //     const key = 'bdfortablet1';
-//     const host = 'http://182.222.81.5:1133';
+//     const host = 'http://izvillain.com:1133';
 //     sendData(key,host, room, msg, sender, isGroupChat, replier, imageDB, packageName);
 
 // }
