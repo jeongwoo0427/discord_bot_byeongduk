@@ -23,6 +23,8 @@
     "network-speed": "^2.1.1",
     "nodemon": "^2.0.19",
     "openai": "^4.11.1",
+    "puppeteer": "^23.6.0",
+    "puppeteer-core": "^23.6.0",
     "request": "^2.88.2"
   }
 }

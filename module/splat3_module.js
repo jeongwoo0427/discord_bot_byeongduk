@@ -114,5 +114,5 @@ module.exports = {
     getRandomMap : async() =>{
         const localeJson = JSON.parse(await request.get('https://splatoon3.ink/data/locale/ko-KR.json'));
         const weaponsJsonArray = Object.values(localeJson.weapons);
-    }
+    },
 }

@@ -3,10 +3,30 @@ const shceduleModule = require('../../module/splat3_module');
 const commoneModule = require('../../module/common_module');
 const openAIModule = require('../../module/openai_module');
 const info = require('../../info.json');
+const puppeteer = require('puppeteer');
 
 
 //const botKey = 'bdfortablet1'; //내서버 녹스
 const botKey = 'bdformobile1'; //집 폰
+
+let browserInstance = null;  // 싱글톤으로 사용할 브라우저 인스턴스
+
+// 브라우저를 싱글톤으로 관리하는 함수
+const getBrowser = async () => {
+    if (!browserInstance) {
+        console.log('Launching new browser instance...');
+        browserInstance = await puppeteer.launch({
+            headless: true,
+            args: [
+                '--no-sandbox',
+                '--disable-setuid-sandbox',
+                '--lang=ko-KR'
+            ]
+        });
+    }
+  return browserInstance;
+};
+
 
 module.exports = {
     messageReply: async (req, res, next) => {
@@ -140,7 +160,9 @@ module.exports = {
                     연어 : ${schedule0.salmon}
                     
                     Ref : https://splatoon3.ink/
-                    `}];
+                    `},
+                    //{ msg: 'http://izvillain.com:1133/api/kakao/getImageFromWebsite?width=400&height=980&url=https://splatoon3.ink/salmonrun', delayMs: 1000 },
+                ];
                 }else{
                     
                     const startMessage =`${msg.substring(1,msg.length)}`;
@@ -148,7 +170,7 @@ module.exports = {
                         {"role": "system", "content": "너는 간단한 대답을 하는 내 친구야."},
                         {"role": "user", "content": "대답은 짧게 하도록 해."},
                         {"role": "assistant", "content": "넹 알겠습니다."},
-                        {"role": "user", "content": "그리고 너의 이름은 이제부터 권병덕이야. 아빠의 이름은 베이즈야."},
+                        {"role": "user", "content": "그리고 너의 이름은 이제부터 권병덕이야. 아빠의 이름은 베이즈야. 너를 만든 사람도 베이즈고"},
                         {"role": "assistant", "content": "넹 알겠어요 베이즈넴"},
                         {"role": "user", "content": "농담 같은거에 재밌게 반응하렴."},
                         {"role": "assistant", "content": "네넹"},
@@ -180,7 +202,53 @@ module.exports = {
 
         } catch (err) {
             console.error(err);
-            
+        }
+    },
+
+    getImageFromWebsite : async (req,res,next)=>{
+        const {url, width, height, } = req.query;
+        try{
+
+
+            // Puppeteer로 브라우저 실행 및 스크린샷 캡처
+            const browser = await getBrowser();
+
+            const page = await browser.newPage();
+            await page.setExtraHTTPHeaders({
+                'Accept-Language': 'ko-KR,ko;q=0.9' 
+            })
+
+       
+            //console.log(url);
+
+            await page.setViewport({ width: parseInt(width??'600'), height: parseInt(height??'1000') });
+            await page.goto(`${url}`,
+                { //네트워크가 아이들 상태가 될때까지 대기
+                    waitUntil: 'networkidle0',
+                });
+
+            const screenshotBuffer = await page.screenshot({
+                type: 'jpeg',
+                quality: 100,
+                omitBackground: true,
+            });
+
+            // 페이지 종료
+            await page.close();
+
+            // Content-Type 헤더 설정 (PNG 이미지)
+            res.setHeader('Content-Type', 'image/png');
+
+            // 이미지 크기를 설정 (선택 사항)
+            res.setHeader('Content-Length', Buffer.byteLength(screenshotBuffer, 'base64'));
+
+            // base64로 인코딩된 이미지를 Buffer로 변환하여 전송
+            return res.send(Buffer.from(screenshotBuffer, 'base64'));
+
+
+
+        } catch (err) {
+            console.error(err);
         }
     }
 }
